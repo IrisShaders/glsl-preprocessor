@@ -1,0 +1,42 @@
+plugins {
+  // Apply the java-library plugin for API and implementation separation.
+  id 'java-library'
+  id 'maven-publish'
+  id 'signing'
+  id 'org.danilopianini.publish-on-central' version '0.7.5' // a newer version 2.0.6 exists but it's annoying to use
+  id 'com.adarshr.test-logger' version '3.2.0'
+	// id "com.github.spotbugs" version "5.0.13"
+}
+
+repositories {
+  // Use Maven Central for resolving dependencies.
+  mavenCentral()
+}
+
+group = "org.anarres"
+version = '0.0.1'
+
+dependencies {
+	api group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.+'
+  implementation group: 'com.github.spotbugs', name: 'spotbugs-annotations', version: '4.7.3'
+	testImplementation group: 'com.google.guava', name: 'guava', version: '18.0'
+}
+
+testing {
+  suites {
+    // Configure the built-in test suite
+    test {
+      // Use JUnit Jupiter test framework
+      useJUnitJupiter('5.9.0')
+    }
+  }
+}
+
+testlogger {
+  theme 'standard-parallel'
+  slowThreshold 5000
+  showSimpleNames true
+  showPassed false
+}
+
+sourceCompatibility = 16

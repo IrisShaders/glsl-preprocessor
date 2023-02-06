@@ -1,4 +1,10 @@
-# Introduction
+# GLSL Preprocessing with the C Preprocessor
+
+This is a fork of JCPP modified for preprocessing GLSL, specifically in Iris](https://github.com/IrisShaders/Iris/).
+
+The following section is the original readme:
+
+## Introduction
 
 The C Preprocessor is an interesting standard. It appears to be
 derived from the de-facto behaviour of the first preprocessors, and
@@ -10,11 +16,6 @@ C-style compilers in Java using tools like sablecc, antlr, JLex,
 CUP and so forth (although if you aren't using sablecc, you need your
 head examined).
 
-This project has has been used to successfully preprocess much of
+This project has been used to successfully preprocess much of
 the source code of the GNU C library. As of version 1.2.5, it can
 also preprocess the Apple Objective C library.
-
-# Documentation
-
-* [JavaDoc API](http://shevek.github.io/jcpp/docs/javadoc/)
-* [Coverage Report](http://shevek.github.io/jcpp/docs/cobertura/)

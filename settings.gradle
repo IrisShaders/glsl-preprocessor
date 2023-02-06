@@ -1,1 +1,2 @@
-rootProject.name='jcpp'
+rootProject.name = 'glsl-preprocessor'
+include('glsl-preprocessor')

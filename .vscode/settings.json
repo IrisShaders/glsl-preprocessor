@@ -1,0 +1,7 @@
+{
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.sources.organizeImports.staticStarThreshold": 1,
+  "java.sources.organizeImports.starThreshold": 2,
+  "editor.detectIndentation": false,
+  "editor.insertSpaces": false
+}
