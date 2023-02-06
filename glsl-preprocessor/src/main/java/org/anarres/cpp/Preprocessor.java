@@ -22,6 +22,7 @@ import static org.anarres.cpp.PreprocessorCommand.*;
 import static org.anarres.cpp.Token.*;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.*;
 
 import org.anarres.cpp.PreprocessorListener.SourceChangeEvent;
@@ -147,7 +148,7 @@ public class Preprocessor implements Closeable {
 	 */
 	public Preprocessor(@NonNull File file)
 			throws IOException {
-		this(new FileLexerSource(file));
+		this(new FileLexerSource(file, Charset.defaultCharset()));
 	}
 
 	/**
@@ -279,7 +280,7 @@ public class Preprocessor implements Closeable {
 	 */
 	public void addInput(@NonNull File file)
 			throws IOException {
-		addInput(new FileLexerSource(file));
+		addInput(new FileLexerSource(file, Charset.defaultCharset()));
 	}
 
 	/**

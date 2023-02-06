@@ -31,12 +31,6 @@ import edu.umd.cs.findbugs.annotations.NonNull;
  * @see Source
  */
 public class InputLexerSource extends LexerSource {
-
-	@Deprecated
-	public InputLexerSource(@NonNull InputStream input) {
-		this(input, Charset.defaultCharset());
-	}
-
 	/**
 	 * Creates a new Source for lexing the given Reader.
 	 *

@@ -19,6 +19,7 @@
 package org.anarres.cpp.fs;
 
 import java.io.*;
+import java.nio.charset.Charset;
 
 import org.anarres.cpp.*;
 
@@ -76,8 +77,8 @@ public class ChrootFileSystem implements VirtualFileSystem {
 
 		@Override
 		public Source getSource() throws IOException {
-			return new FileLexerSource(new File(root, getPath()),
-					getPath());
+			return new FileLexerSource(
+					new File(root, getPath()), Charset.defaultCharset(), getPath());
 		}
 	}
 }

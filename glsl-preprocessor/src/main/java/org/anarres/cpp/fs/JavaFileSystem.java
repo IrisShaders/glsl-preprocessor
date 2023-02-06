@@ -19,6 +19,7 @@
 package org.anarres.cpp.fs;
 
 import java.io.*;
+import java.nio.charset.Charset;
 
 import org.anarres.cpp.*;
 
@@ -72,7 +73,7 @@ public class JavaFileSystem implements VirtualFileSystem {
 
 		@Override
 		public Source getSource() throws IOException {
-			return new FileLexerSource(this);
+			return new FileLexerSource(this, Charset.defaultCharset());
 		}
 	}
 }

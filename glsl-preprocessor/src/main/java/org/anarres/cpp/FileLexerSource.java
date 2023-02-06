@@ -47,29 +47,14 @@ public class FileLexerSource extends InputLexerSource {
 		this.path = path;
 	}
 
-	public FileLexerSource(@NonNull File file, @NonNull String path)
-			throws IOException {
-		this(file, Charset.defaultCharset(), path);
-	}
-
 	public FileLexerSource(@NonNull File file, @NonNull Charset charset)
 			throws IOException {
 		this(file, charset, file.getPath());
 	}
 
-	public FileLexerSource(@NonNull File file)
-			throws IOException {
-		this(file, Charset.defaultCharset());
-	}
-
 	public FileLexerSource(@NonNull String path, @NonNull Charset charset)
 			throws IOException {
 		this(new File(path), charset, path);
-	}
-
-	public FileLexerSource(@NonNull String path)
-			throws IOException {
-		this(path, Charset.defaultCharset());
 	}
 
 	@NonNull
