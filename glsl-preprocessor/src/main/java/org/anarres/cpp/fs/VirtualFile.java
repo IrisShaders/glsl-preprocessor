@@ -16,9 +16,11 @@
  *
  * Modified by the contributors of glsl-preprocessor.
  */
-package org.anarres.cpp;
+package org.anarres.cpp.fs;
 
 import java.io.IOException;
+
+import org.anarres.cpp.Source;
 
 import edu.umd.cs.findbugs.annotations.*;
 

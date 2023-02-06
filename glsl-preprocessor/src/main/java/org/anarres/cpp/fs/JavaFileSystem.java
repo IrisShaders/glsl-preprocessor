@@ -16,15 +16,16 @@
  *
  * Modified by the contributors of glsl-preprocessor.
  */
-package org.anarres.cpp;
+package org.anarres.cpp.fs;
 
 import java.io.*;
+
+import org.anarres.cpp.*;
 
 /**
  * A virtual filesystem implementation using java.io.
  */
 public class JavaFileSystem implements VirtualFileSystem {
-
 	@Override
 	public VirtualFile getFile(String path) {
 		return new JavaFile(path);
@@ -73,6 +74,5 @@ public class JavaFileSystem implements VirtualFileSystem {
 		public Source getSource() throws IOException {
 			return new FileLexerSource(this);
 		}
-
 	}
 }

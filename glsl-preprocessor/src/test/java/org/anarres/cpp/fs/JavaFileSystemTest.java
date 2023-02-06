@@ -1,4 +1,4 @@
-package org.anarres.cpp;
+package org.anarres.cpp.fs;
 
 import static org.junit.jupiter.api.Assertions.*;
 

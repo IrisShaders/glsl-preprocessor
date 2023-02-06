@@ -3,10 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.anarres.cpp;
+package org.anarres.cpp.fs;
 
 import java.io.*;
 import java.nio.charset.Charset;
+
+import org.anarres.cpp.*;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 

@@ -25,6 +25,7 @@ import java.io.*;
 import java.util.*;
 
 import org.anarres.cpp.PreprocessorListener.SourceChangeEvent;
+import org.anarres.cpp.fs.*;
 import org.slf4j.*;
 
 import edu.umd.cs.findbugs.annotations.*;

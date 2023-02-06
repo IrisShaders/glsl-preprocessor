@@ -16,9 +16,11 @@
  *
  * Modified by the contributors of glsl-preprocessor.
  */
-package org.anarres.cpp;
+package org.anarres.cpp.fs;
 
 import java.io.*;
+
+import org.anarres.cpp.*;
 
 /**
  * A virtual filesystem implementation using java.io in a virtual

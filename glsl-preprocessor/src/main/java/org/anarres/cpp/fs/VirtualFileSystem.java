@@ -16,7 +16,7 @@
  *
  * Modified by the contributors of glsl-preprocessor.
  */
-package org.anarres.cpp;
+package org.anarres.cpp.fs;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 
