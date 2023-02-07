@@ -16,11 +16,13 @@
  *
  * Modified by the contributors of glsl-preprocessor.
  */
-package org.anarres.cpp;
+package org.anarres.cpp.test_util;
 
 import static org.anarres.cpp.Token.*;
 
 import java.io.*;
+
+import org.anarres.cpp.*;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 

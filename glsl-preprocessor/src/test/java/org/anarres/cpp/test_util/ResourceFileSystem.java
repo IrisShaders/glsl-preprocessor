@@ -1,14 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Missing license header, assuming there was supposed to be one.
+ * 
+ * Modified by the contributors of glsl-preprocessor.
  */
-package org.anarres.cpp.fs;
+package org.anarres.cpp.test_util;
 
 import java.io.*;
 import java.nio.charset.Charset;
 
 import org.anarres.cpp.*;
+import org.anarres.cpp.fs.*;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 
@@ -24,6 +25,14 @@ public class ResourceFileSystem implements VirtualFileSystem {
 	public ResourceFileSystem(@NonNull ClassLoader loader, @NonNull Charset charset) {
 		this.loader = loader;
 		this.charset = charset;
+	}
+
+	public ResourceFileSystem(@NonNull ClassLoader loader) {
+		this(loader, Charset.defaultCharset());
+	}
+
+	public ResourceFileSystem() {
+		this(ClassLoader.getSystemClassLoader());
 	}
 
 	@Override
@@ -48,31 +57,7 @@ public class ResourceFileSystem implements VirtualFileSystem {
 
 		@Override
 		public boolean isFile() {
-			throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods,
-																																			// choose Tools | Templates.
-		}
-
-		@Override
-		public String getPath() {
-			return path;
-		}
-
-		@Override
-		public String getName() {
-			return path.substring(path.lastIndexOf('/') + 1);
-		}
-
-		@Override
-		public ResourceFile getParentFile() {
-			int idx = path.lastIndexOf('/');
-			if (idx < 1)
-				return null;
-			return new ResourceFile(loader, path.substring(0, idx));
-		}
-
-		@Override
-		public ResourceFile getChildFile(String name) {
-			return new ResourceFile(loader, path + "/" + name);
+			return loader.getResource(path) != null;
 		}
 
 		@Override

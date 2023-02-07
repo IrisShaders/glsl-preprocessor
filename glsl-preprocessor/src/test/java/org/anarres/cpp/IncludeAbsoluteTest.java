@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.*;
 
+import org.anarres.cpp.fs.MemoryFileSystem;
+import org.anarres.cpp.test_util.CppReader;
 import org.junit.jupiter.api.Test;
 import org.slf4j.*;
 
@@ -20,11 +22,11 @@ public class IncludeAbsoluteTest {
 	@Test
 	public void testAbsoluteInclude() throws Exception {
 		File file = new File("build/resources/test/absolute.h");
-		assertTrue(file.exists());
-
 		String input = "#include <" + file.getAbsolutePath() + ">\n";
 		LOG.info("Input: " + input);
-		Preprocessor pp = new Preprocessor();
+		MemoryFileSystem fs = new MemoryFileSystem();
+		fs.addFile(file.getAbsolutePath(), "absolute-result");
+		Preprocessor pp = new Preprocessor(fs);
 		pp.addInput(new StringLexerSource(input, true));
 		Reader r = new CppReader(pp);
 		String output = CharStreams.toString(r);

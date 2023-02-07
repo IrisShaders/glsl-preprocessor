@@ -27,7 +27,10 @@ public enum PreprocessorCommand {
 	PP_UNDEF("undef"),
 	PP_WARNING("warning"),
 	PP_INCLUDE_NEXT("include_next"),
-	PP_IMPORT("import");
+	PP_IMPORT("import"),
+	PP_EXTENSION("extension"),
+	PP_CUSTOM("custom"),
+	PP_VERSION("version");
 
 	private final String text;
 

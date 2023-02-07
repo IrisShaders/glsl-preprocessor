@@ -18,16 +18,19 @@
  */
 package org.anarres.cpp.fs;
 
+import java.io.IOException;
+
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * An extremely lightweight virtual file system interface.
  */
 public interface VirtualFileSystem {
+	@NonNull
+	public VirtualFile getFile(@NonNull String path) throws IOException;
 
 	@NonNull
-	public VirtualFile getFile(@NonNull String path);
-
-	@NonNull
-	public VirtualFile getFile(@NonNull String dir, @NonNull String name);
+	public default VirtualFile getFile(@NonNull String dir, @NonNull String name) throws IOException {
+		return getFile(dir + '/' + name);
+	}
 }

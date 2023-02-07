@@ -40,5 +40,12 @@ public enum Feature {
 	OBJCSYNTAX,
 	INCLUDENEXT,
 	/** Random extensions. */
-	PRAGMA_ONCE
+	PRAGMA_ONCE,
+
+	/** GLSL support */
+	GLSL,
+	/** arbitrary pragmas */
+	ARBITRARY_PRAGMAS,
+	/** #custom directive */
+	CUSTOM_DIRECTIVE,
 }

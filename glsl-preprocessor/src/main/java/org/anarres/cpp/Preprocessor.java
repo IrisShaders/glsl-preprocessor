@@ -22,7 +22,6 @@ import static org.anarres.cpp.PreprocessorCommand.*;
 import static org.anarres.cpp.Token.*;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.util.*;
 
 import org.anarres.cpp.PreprocessorListener.SourceChangeEvent;
@@ -36,8 +35,7 @@ import edu.umd.cs.findbugs.annotations.*;
  * The Preprocessor outputs a token stream which does not need
  * re-lexing for C or C++. Alternatively, the output text may be
  * reconstructed by concatenating the {@link Token#getText() text}
- * values of the returned {@link Token Tokens}. (See
- * {@link CppReader}, which does this.)
+ * values of the returned {@link Token Tokens}.
  */
 /*
  * Source file name and line number information is conveyed by lines of the form
@@ -104,18 +102,12 @@ public class Preprocessor implements Closeable {
 	private final Set<String> onceseenpaths = new HashSet<String>();
 	private final List<VirtualFile> includes = new ArrayList<VirtualFile>();
 
-	/* Support junk to make it work like cpp */
-	private List<String> quoteincludepath; /* -iquote */
-
-	private List<String> sysincludepath; /* -I */
-
-	private List<String> frameworkspath;
 	private final Set<Feature> features;
 	private final Set<Warning> warnings;
 	private VirtualFileSystem filesystem;
 	private PreprocessorListener listener;
 
-	public Preprocessor() {
+	public Preprocessor(VirtualFileSystem filesystem) {
 		this.inputs = new ArrayList<Source>();
 
 		this.macros = new HashMap<String, Macro>();
@@ -128,27 +120,23 @@ public class Preprocessor implements Closeable {
 
 		this.counter = 0;
 
-		this.quoteincludepath = new ArrayList<String>();
-		this.sysincludepath = new ArrayList<String>();
-		this.frameworkspath = new ArrayList<String>();
 		this.features = EnumSet.noneOf(Feature.class);
 		this.warnings = EnumSet.noneOf(Warning.class);
-		this.filesystem = new JavaFileSystem();
+		this.filesystem = filesystem;
 		this.listener = null;
 	}
 
-	public Preprocessor(@NonNull Source initial) {
-		this();
+	public Preprocessor() {
+		this(MemoryFileSystem.EMPTY);
+	}
+
+	public Preprocessor(@NonNull Source initial, @NonNull VirtualFileSystem filesystem) {
+		this(filesystem);
 		addInput(initial);
 	}
 
-	/**
-	 * Equivalent to
-	 * 'new Preprocessor(new {@link FileLexerSource}(file))'
-	 */
-	public Preprocessor(@NonNull File file)
-			throws IOException {
-		this(new FileLexerSource(file, Charset.defaultCharset()));
+	public Preprocessor(@NonNull Source initial) {
+		this(initial, MemoryFileSystem.EMPTY);
 	}
 
 	/**
@@ -274,16 +262,6 @@ public class Preprocessor implements Closeable {
 	}
 
 	/**
-	 * Adds input for the Preprocessor.
-	 *
-	 * @see #addInput(Source)
-	 */
-	public void addInput(@NonNull File file)
-			throws IOException {
-		addInput(new FileLexerSource(file, Charset.defaultCharset()));
-	}
-
-	/**
 	 * Handles an error.
 	 *
 	 * If a PreprocessorListener is installed, it receives the
@@ -392,61 +370,6 @@ public class Preprocessor implements Closeable {
 	public void addMacro(@NonNull String name)
 			throws LexerException {
 		addMacro(name, "1");
-	}
-
-	/**
-	 * Sets the user include path used by this Preprocessor.
-	 */
-	/* Note for future: Create an IncludeHandler? */
-	public void setQuoteIncludePath(@NonNull List<String> path) {
-		this.quoteincludepath = path;
-	}
-
-	/**
-	 * Returns the user include-path of this Preprocessor.
-	 *
-	 * This list may be freely modified by user code.
-	 */
-	@NonNull
-	public List<String> getQuoteIncludePath() {
-		return quoteincludepath;
-	}
-
-	/**
-	 * Sets the system include path used by this Preprocessor.
-	 */
-	/* Note for future: Create an IncludeHandler? */
-	public void setSystemIncludePath(@NonNull List<String> path) {
-		this.sysincludepath = path;
-	}
-
-	/**
-	 * Returns the system include-path of this Preprocessor.
-	 *
-	 * This list may be freely modified by user code.
-	 */
-	@NonNull
-	public List<String> getSystemIncludePath() {
-		return sysincludepath;
-	}
-
-	/**
-	 * Sets the Objective-C frameworks path used by this Preprocessor.
-	 */
-	/* Note for future: Create an IncludeHandler? */
-	public void setFrameworksPath(@NonNull List<String> path) {
-		this.frameworkspath = path;
-	}
-
-	/**
-	 * Returns the Objective-C frameworks path used by this
-	 * Preprocessor.
-	 *
-	 * This list may be freely modified by user code.
-	 */
-	@NonNull
-	public List<String> getFrameworksPath() {
-		return frameworkspath;
 	}
 
 	/**
@@ -1178,54 +1101,13 @@ public class Preprocessor implements Closeable {
 			@NonNull String name, boolean quoted, boolean next)
 			throws IOException,
 			LexerException {
-		if (name.startsWith("/")) {
-			VirtualFile file = filesystem.getFile(name);
-			if (include(file))
-				return;
-			StringBuilder buf = new StringBuilder();
-			buf.append("File not found: ").append(name);
-			error(line, 0, buf.toString());
+		VirtualFile file = filesystem.getFile(name);
+		if (include(file))
 			return;
-		}
-
-		VirtualFile pdir = null;
-		if (quoted) {
-			if (parent != null) {
-				VirtualFile pfile = filesystem.getFile(parent);
-				pdir = pfile.getParentFile();
-			}
-			if (pdir != null) {
-				VirtualFile ifile = pdir.getChildFile(name);
-				if (include(ifile))
-					return;
-			}
-			if (include(quoteincludepath, name))
-				return;
-		} else {
-			int idx = name.indexOf('/');
-			if (idx != -1) {
-				String frameworkName = name.substring(0, idx);
-				String headerName = name.substring(idx + 1);
-				String headerPath = frameworkName + ".framework/Headers/" + headerName;
-				if (include(frameworkspath, headerPath))
-					return;
-			}
-		}
-
-		if (include(sysincludepath, name))
-			return;
-
 		StringBuilder buf = new StringBuilder();
 		buf.append("File not found: ").append(name);
-		buf.append(" in");
-		if (quoted) {
-			buf.append(" .").append('(').append(pdir).append(')');
-			for (String dir : quoteincludepath)
-				buf.append(" ").append(dir);
-		}
-		for (String dir : sysincludepath)
-			buf.append(" ").append(dir);
 		error(line, 0, buf.toString());
+		return;
 	}
 
 	@NonNull
@@ -1315,7 +1197,9 @@ public class Preprocessor implements Closeable {
 				return;
 			}
 		}
-		warning(name, "Unknown #" + "pragma: " + name.getText());
+		if (!getFeature(Feature.ARBITRARY_PRAGMAS)) {
+			warning(name, "Unknown #" + "pragma: " + name.getText());
+		}
 	}
 
 	@NonNull

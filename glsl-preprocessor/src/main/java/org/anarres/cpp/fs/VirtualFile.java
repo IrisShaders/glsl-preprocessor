@@ -28,21 +28,7 @@ import edu.umd.cs.findbugs.annotations.*;
  * An extremely lightweight virtual file interface.
  */
 public interface VirtualFile {
-
-	// public String getParent();
 	public boolean isFile();
-
-	@NonNull
-	public String getPath();
-
-	@NonNull
-	public String getName();
-
-	@CheckForNull
-	public VirtualFile getParentFile();
-
-	@NonNull
-	public VirtualFile getChildFile(String name);
 
 	@NonNull
 	public Source getSource() throws IOException;

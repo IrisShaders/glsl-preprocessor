@@ -3,8 +3,8 @@ package org.anarres.cpp;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.*;
-import java.util.Collections;
 
+import org.anarres.cpp.test_util.*;
 import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -16,8 +16,7 @@ public class CppReaderTest {
 		System.out.println("Testing " + in);
 		StringReader r = new StringReader(in);
 		CppReader p = new CppReader(r);
-		p.getPreprocessor().setSystemIncludePath(
-				Collections.singletonList("src/test/resources"));
+		p.getPreprocessor().setFileSystem(new ResourceFileSystem());
 		p.getPreprocessor().addFeatures(f);
 		BufferedReader b = new BufferedReader(p);
 
