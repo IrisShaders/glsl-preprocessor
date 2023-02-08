@@ -383,7 +383,7 @@ public class Preprocessor implements Closeable {
 	 * included by this Preprocessor.
 	 *
 	 * This does not include any {@link Source} provided to the constructor
-	 * or {@link #addInput(java.io.File)} or {@link #addInput(Source)}.
+	 * or {@link #addInput(Source)}.
 	 */
 	@NonNull
 	public List<? extends VirtualFile> getIncludes() {
@@ -451,7 +451,6 @@ public class Preprocessor implements Closeable {
 	 * @see #push_source(Source,boolean)
 	 *
 	 * @param linemarker TODO: currently ignored, might be a bug?
-	 * @throws IOException if an I/O error occurs.
 	 */
 	@CheckForNull
 	protected Token pop_source(boolean linemarker) {
@@ -1023,7 +1022,6 @@ public class Preprocessor implements Closeable {
 	 *
 	 * @param file The VirtualFile to attempt to include.
 	 * @return true if the file was successfully included, false otherwise.
-	 * @throws IOException if an I/O error occurs.
 	 */
 	protected boolean include(@NonNull VirtualFile file) {
 		// System.out.println("Try to include " + ((File)file).getAbsolutePath());
@@ -1042,7 +1040,6 @@ public class Preprocessor implements Closeable {
 	 * @param path The list of virtual directories to search for the given name.
 	 * @param name The name of the file to attempt to include.
 	 * @return true if the file was successfully included, false otherwise.
-	 * @throws IOException if an I/O error occurs.
 	 */
 	protected boolean include(@NonNull Iterable<String> path, @NonNull String name) {
 		for (String dir : path) {
@@ -1055,9 +1052,6 @@ public class Preprocessor implements Closeable {
 
 	/**
 	 * Handles an include directive.
-	 *
-	 * @throws IOException    if an I/O error occurs.
-	 * @throws LexerException if the include fails, and the error handler is fatal.
 	 */
 	private void include(
 			@CheckForNull String parent, int line,
@@ -1957,9 +1951,6 @@ public class Preprocessor implements Closeable {
 	 *
 	 * @see Token
 	 * @return The next fully preprocessed token.
-	 * @throws IOException       if an I/O error occurs.
-	 * @throws LexerException    if a preprocessing error occurs.
-	 * @throws InternalException if an unexpected error condition arises.
 	 */
 	@NonNull
 	public Token token() {
