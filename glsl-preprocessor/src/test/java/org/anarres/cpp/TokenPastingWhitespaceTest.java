@@ -2,13 +2,10 @@ package org.anarres.cpp;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.*;
+import java.io.IOException;
 
-import org.anarres.cpp.test_util.CppReader;
 import org.junit.jupiter.api.Test;
 import org.slf4j.*;
-
-import com.google.common.io.CharStreams;
 
 /**
  * https://github.com/shevek/jcpp/issues/25
@@ -34,13 +31,19 @@ public class TokenPastingWhitespaceTest {
 						+ "ONE(     /* evil newline */\n"
 						+ "    bad)\n",
 				true));
-		Reader r = new CppReader(pp);
-		String text = CharStreams.toString(r).trim();
-		LOG.info("Output is:\n" + text);
+		String output;
+		try {
+			output = pp.printToString().trim();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} finally {
+			pp.close();
+		}
+		LOG.info("Output is:\n" + output);
 		assertEquals("one_two_good\n"
 				+ "one_two_bad\n"
 				+ "\n"
 				+ "one_good\n"
-				+ "one_bad", text);
+				+ "one_bad", output);
 	}
 }

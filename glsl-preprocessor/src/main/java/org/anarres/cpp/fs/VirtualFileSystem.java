@@ -26,6 +26,8 @@ import edu.umd.cs.findbugs.annotations.NonNull;
  * An extremely lightweight virtual file system interface.
  */
 public interface VirtualFileSystem {
+	public static final MemoryFileSystem EMPTY = new MemoryFileSystem();
+
 	@NonNull
 	public VirtualFile getFile(@NonNull String path) throws IOException;
 

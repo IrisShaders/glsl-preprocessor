@@ -71,8 +71,7 @@ public class Preprocessor implements Closeable {
 	private static final Source INTERNAL = new Source() {
 		@Override
 		public Token token()
-				throws IOException,
-				LexerException {
+				throws IOException, LexerException {
 			throw new LexerException("Cannot read from " + getName());
 		}
 
@@ -90,53 +89,43 @@ public class Preprocessor implements Closeable {
 	private static final Macro __FILE__ = new Macro(INTERNAL, "__FILE__");
 	private static final Macro __COUNTER__ = new Macro(INTERNAL, "__COUNTER__");
 
-	private final List<Source> inputs;
+	private final List<Source> inputs = new ArrayList<>();
 
 	/* The fundamental engine. */
-	private final Map<String, Macro> macros;
-	private final Stack<State> states;
-	private Source source;
+	private final Map<String, Macro> macros = new HashMap<>();
+	private final Stack<State> states = new Stack<>();
+	private Source source = null;
 
 	/* Miscellaneous support. */
-	private int counter;
+	private int counter = 0;
 	private final Set<String> onceseenpaths = new HashSet<String>();
 	private final List<VirtualFile> includes = new ArrayList<VirtualFile>();
 
-	private final Set<Feature> features;
-	private final Set<Warning> warnings;
-	private VirtualFileSystem filesystem;
-	private PreprocessorListener listener;
+	private final Set<Feature> features = EnumSet.noneOf(Feature.class);
+	private final Set<Warning> warnings = EnumSet.noneOf(Warning.class);
+	private VirtualFileSystem filesystem = VirtualFileSystem.EMPTY;
+	private PreprocessorListener listener = null;
 
-	public Preprocessor(VirtualFileSystem filesystem) {
-		this.inputs = new ArrayList<Source>();
-
-		this.macros = new HashMap<String, Macro>();
+	{
 		macros.put(__LINE__.getName(), __LINE__);
 		macros.put(__FILE__.getName(), __FILE__);
 		macros.put(__COUNTER__.getName(), __COUNTER__);
-		this.states = new Stack<State>();
 		states.push(new State());
-		this.source = null;
-
-		this.counter = 0;
-
-		this.features = EnumSet.noneOf(Feature.class);
-		this.warnings = EnumSet.noneOf(Warning.class);
-		this.filesystem = filesystem;
-		this.listener = null;
 	}
 
 	public Preprocessor() {
-		this(MemoryFileSystem.EMPTY);
-	}
-
-	public Preprocessor(@NonNull Source initial, @NonNull VirtualFileSystem filesystem) {
-		this(filesystem);
-		addInput(initial);
 	}
 
 	public Preprocessor(@NonNull Source initial) {
-		this(initial, MemoryFileSystem.EMPTY);
+		addInput(initial);
+	}
+
+	public Preprocessor(@NonNull Reader r) {
+		this(new LexerSource(r, true));
+	}
+
+	public Preprocessor(@NonNull String r) {
+		this(new StringReader(r));
 	}
 
 	/**
@@ -362,7 +351,7 @@ public class Preprocessor implements Closeable {
 	/**
 	 * Defines the given name as a macro, with the value <code>1</code>.
 	 *
-	 * This is a convnience method, and is equivalent to
+	 * This is a convenience method, and is equivalent to
 	 * <code>addMacro(name, "1")</code>.
 	 *
 	 * @throws LexerException if the definition fails or is otherwise illegal.
@@ -2030,6 +2019,41 @@ public class Preprocessor implements Closeable {
 		if (getFeature(Feature.DEBUG))
 			LOG.debug("pp: Returning " + tok);
 		return tok;
+	}
+
+	public void printTo(Appendable appendable) throws IOException,
+			LexerException {
+		while (true) {
+			Token token = token();
+			if (token == null) {
+				return;
+			}
+			switch (token.getType()) {
+				case EOF:
+					return;
+				case CCOMMENT:
+				case CPPCOMMENT:
+					if (!getFeature(Feature.KEEPCOMMENTS)) {
+						appendable.append(' ');
+						break;
+					}
+				default:
+					appendable.append(token.getText());
+					break;
+			}
+		}
+	}
+
+	public StringBuilder print() throws IOException,
+			LexerException {
+		StringBuilder sb = new StringBuilder();
+		printTo(sb);
+		return sb;
+	}
+
+	public String printToString() throws IOException,
+			LexerException {
+		return print().toString();
 	}
 
 	@Override

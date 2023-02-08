@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.*;
 
 public class MemoryFileSystem implements VirtualFileSystem {
-	public static final MemoryFileSystem EMPTY = new MemoryFileSystem();
-
 	private final Map<String, VirtualFile> files = new HashMap<String, VirtualFile>();
 
 	public MemoryFileSystem() {

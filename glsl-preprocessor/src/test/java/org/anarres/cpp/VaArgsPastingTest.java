@@ -7,13 +7,10 @@ package org.anarres.cpp;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.*;
+import java.io.IOException;
 
-import org.anarres.cpp.test_util.CppReader;
 import org.junit.jupiter.api.Test;
 import org.slf4j.*;
-
-import com.google.common.io.CharStreams;
 
 /**
  *
@@ -46,8 +43,14 @@ public class VaArgsPastingTest {
 		Preprocessor pp = new Preprocessor();
 		pp.addFeature(Feature.KEEPCOMMENTS);
 		pp.addInput(new StringLexerSource(input, true));
-		Reader r = new CppReader(pp);
-		String output = CharStreams.toString(r).trim();
+		String output;
+		try {
+			output = pp.printToString().trim();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} finally {
+			pp.close();
+		}
 		LOG.info("Output is:\n" + output);
 		assertEquals("foo(a, b) // REGULAR_ARGS 2\n"
 				+ "foo(a, b) // REGULAR_ELLIPSIS 2\n"

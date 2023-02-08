@@ -9,25 +9,15 @@ import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 
-public class CppReaderTest {
-
+public class ReaderTest {
 	public static String testCppReader(@NonNull String in, Feature... f)
 			throws Exception {
 		System.out.println("Testing " + in);
 		StringReader r = new StringReader(in);
-		CppReader p = new CppReader(r);
-		p.getPreprocessor().setFileSystem(new ResourceFileSystem());
-		p.getPreprocessor().addFeatures(f);
-		BufferedReader b = new BufferedReader(p);
-
-		StringBuilder out = new StringBuilder();
-		String line;
-		while ((line = b.readLine()) != null) {
-			System.out.println(" >> " + line);
-			out.append(line).append("\n");
-		}
-
-		return out.toString();
+		Preprocessor pp = new Preprocessor(r);
+		pp.setFileSystem(new ResourceFileSystem());
+		pp.addFeatures(f);
+		return pp.printToString();
 	}
 
 	@Test

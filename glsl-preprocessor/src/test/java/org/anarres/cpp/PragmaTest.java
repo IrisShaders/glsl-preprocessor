@@ -9,12 +9,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 
-import org.anarres.cpp.test_util.CppReader;
 import org.junit.jupiter.api.Test;
 import org.slf4j.*;
 
 import com.google.common.base.Charsets;
-import com.google.common.io.*;
+import com.google.common.io.Files;
 
 /**
  *
@@ -29,10 +28,10 @@ public class PragmaTest {
 		assertTrue(file.exists());
 
 		// create a CharSource from a file
-		CppReader r = new CppReader(Files.newReader(file, Charsets.UTF_8));
-		r.getPreprocessor().setListener(new DefaultPreprocessorListener());
-		String output = CharStreams.toString(r);
-		r.close();
+		Preprocessor pp = new Preprocessor(Files.newReader(file, Charsets.UTF_8));
+		pp.setListener(new DefaultPreprocessorListener());
+		String output = pp.printToString();
+		pp.close();
 		LOG.info("Output: " + output);
 		// assertTrue(output.contains("absolute-result"));
 	}

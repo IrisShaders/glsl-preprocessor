@@ -11,7 +11,6 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-import org.anarres.cpp.test_util.CppReader;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 import org.slf4j.*;
@@ -41,9 +40,9 @@ public class RegressionTest {
 	public void testRegression(String name, File inFile, File outFile) throws Exception {
 		String inText = Files.toString(inFile, Charsets.UTF_8);
 		LOG.info("Read " + name + ":\n" + inText);
-		CppReader cppReader = new CppReader(new StringReader(inText));
-		String cppText = CharStreams.toString(cppReader);
-		LOG.info("Generated " + name + ":\n" + cppText);
+		Preprocessor pp = new Preprocessor(new StringReader(inText));
+		String generatedText = pp.printToString();
+		LOG.info("Generated " + name + ":\n" + generatedText);
 		if (outFile.exists()) {
 			String outText = Files.toString(outFile, Charsets.UTF_8);
 			LOG.info("Expected " + name + ":\n" + outText);
