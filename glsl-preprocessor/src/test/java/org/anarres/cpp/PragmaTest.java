@@ -8,12 +8,10 @@ package org.anarres.cpp;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
+import java.nio.file.Files;
 
 import org.junit.jupiter.api.Test;
 import org.slf4j.*;
-
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
 
 /**
  *
@@ -28,7 +26,7 @@ public class PragmaTest {
 		assertTrue(file.exists());
 
 		// create a CharSource from a file
-		Preprocessor pp = new Preprocessor(Files.newReader(file, Charsets.UTF_8));
+		Preprocessor pp = new Preprocessor(Files.newBufferedReader(file.toPath()));
 		pp.setListener(new DefaultPreprocessorListener());
 		String output = pp.printToString();
 		pp.close();

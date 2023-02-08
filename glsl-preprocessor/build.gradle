@@ -19,7 +19,6 @@ version = '0.0.1'
 dependencies {
 	api group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.+'
   implementation group: 'com.github.spotbugs', name: 'spotbugs-annotations', version: '4.7.3'
-	testImplementation group: 'com.google.guava', name: 'guava', version: '18.0'
 }
 
 testing {
