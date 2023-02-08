@@ -13,11 +13,11 @@ repositories {
   mavenCentral()
 }
 
-group = "org.anarres"
+group = "io.github.douira"
 version = '0.0.1'
 
 dependencies {
-	api group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.+'
+	implementation group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.+'
   implementation group: 'com.github.spotbugs', name: 'spotbugs-annotations', version: '4.7.3'
 }
 
@@ -38,4 +38,30 @@ testlogger {
   showPassed false
 }
 
-sourceCompatibility = 16
+sourceCompatibility = 17
+
+publishOnCentral {
+  configureMavenCentral.set(true)
+  projectDescription.set('GLSL Preprocessing with the C Preprocessor in Java - based on JCPP')
+  projectLongName.set('glsl-preprocessor')
+  projectUrl.set('https://github.com/IrisShaders/glsl-preprocessor')
+  scmConnection.set('git@github.com:IrisShaders/glsl-preprocessor.git')
+  licenseName.set('GNU General Public License v3.0 with exceptions')
+  licenseUrl.set('https://www.gnu.org/licenses/gpl-3.0.en.html')
+}
+
+publishing {
+  publications {
+    javaMaven(MavenPublication) {
+      pom {
+        developers {
+          developer {
+            name.set('douira')
+            email.set('douira100@gmail.com')
+            url.set('https://douira.github.io')
+          }
+        }
+      }
+    }
+  }
+}
