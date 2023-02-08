@@ -18,11 +18,9 @@
  */
 package org.anarres.cpp.fs;
 
-import java.io.IOException;
-
 import org.anarres.cpp.Source;
 
-import edu.umd.cs.findbugs.annotations.*;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * An extremely lightweight virtual file interface.
@@ -31,5 +29,5 @@ public interface VirtualFile {
 	public boolean isFile();
 
 	@NonNull
-	public Source getSource() throws IOException;
+	public Source getSource();
 }

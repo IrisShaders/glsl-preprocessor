@@ -47,9 +47,7 @@ public class DefaultPreprocessorListener implements PreprocessorListener {
 	 * it may throw an exception.
 	 */
 	@Override
-	public void handleWarning(Source source, int line, int column,
-			String msg)
-			throws LexerException {
+	public void handleWarning(Source source, int line, int column, String msg) {
 		warnings++;
 		print(source.getName() + ":" + line + ":" + column
 				+ ": warning: " + msg);
@@ -63,9 +61,7 @@ public class DefaultPreprocessorListener implements PreprocessorListener {
 	 * it may throw an exception.
 	 */
 	@Override
-	public void handleError(Source source, int line, int column,
-			String msg)
-			throws LexerException {
+	public void handleError(Source source, int line, int column, String msg) {
 		errors++;
 		print(source.getName() + ":" + line + ":" + column
 				+ ": error: " + msg);

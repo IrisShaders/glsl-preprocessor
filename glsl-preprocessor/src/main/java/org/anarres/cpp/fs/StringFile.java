@@ -1,5 +1,4 @@
 package org.anarres.cpp.fs;
-import java.io.IOException;
 
 import org.anarres.cpp.*;
 
@@ -16,7 +15,7 @@ class StringFile implements VirtualFile {
 	}
 
 	@Override
-	public Source getSource() throws IOException {
+	public Source getSource() {
 		return new StringLexerSource(content);
 	}
 }

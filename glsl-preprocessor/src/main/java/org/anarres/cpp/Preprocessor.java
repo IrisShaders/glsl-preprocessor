@@ -70,8 +70,7 @@ public class Preprocessor implements Closeable {
 
 	private static final Source INTERNAL = new Source() {
 		@Override
-		public Token token()
-				throws IOException, LexerException {
+		public Token token() {
 			throw new LexerException("Cannot read from " + getName());
 		}
 
@@ -256,8 +255,7 @@ public class Preprocessor implements Closeable {
 	 * If a PreprocessorListener is installed, it receives the
 	 * error. Otherwise, an exception is thrown.
 	 */
-	protected void error(int line, int column, @NonNull String msg)
-			throws LexerException {
+	protected void error(int line, int column, @NonNull String msg) {
 		if (listener != null)
 			listener.handleError(source, line, column, msg);
 		else
@@ -272,8 +270,7 @@ public class Preprocessor implements Closeable {
 	 *
 	 * @see #error(int, int, String)
 	 */
-	protected void error(@NonNull Token tok, @NonNull String msg)
-			throws LexerException {
+	protected void error(@NonNull Token tok, @NonNull String msg) {
 		error(tok.getLine(), tok.getColumn(), msg);
 	}
 
@@ -283,8 +280,7 @@ public class Preprocessor implements Closeable {
 	 * If a PreprocessorListener is installed, it receives the
 	 * warning. Otherwise, an exception is thrown.
 	 */
-	protected void warning(int line, int column, @NonNull String msg)
-			throws LexerException {
+	protected void warning(int line, int column, @NonNull String msg) {
 		if (warnings.contains(Warning.ERROR))
 			error(line, column, msg);
 		else if (listener != null)
@@ -301,8 +297,7 @@ public class Preprocessor implements Closeable {
 	 *
 	 * @see #warning(int, int, String)
 	 */
-	protected void warning(@NonNull Token tok, @NonNull String msg)
-			throws LexerException {
+	protected void warning(@NonNull Token tok, @NonNull String msg) {
 		warning(tok.getLine(), tok.getColumn(), msg);
 	}
 
@@ -314,7 +309,7 @@ public class Preprocessor implements Closeable {
 	 *
 	 * @throws LexerException if the definition fails or is otherwise illegal.
 	 */
-	public void addMacro(@NonNull Macro m) throws LexerException {
+	public void addMacro(@NonNull Macro m) {
 		// System.out.println("Macro " + m);
 		String name = m.getName();
 		/* Already handled as a source error in macro(). */
@@ -331,21 +326,20 @@ public class Preprocessor implements Closeable {
 	 *
 	 * @throws LexerException if the definition fails or is otherwise illegal.
 	 */
-	public void addMacro(@NonNull String name, @NonNull String value)
-			throws LexerException {
+	public void addMacro(@NonNull String name, @NonNull String value) {
+		Macro m = new Macro(name);
+		StringLexerSource s = new StringLexerSource(value);
 		try {
-			Macro m = new Macro(name);
-			StringLexerSource s = new StringLexerSource(value);
 			while (true) {
 				Token tok = s.token();
 				if (tok.getType() == EOF)
 					break;
 				m.addToken(tok);
 			}
-			addMacro(m);
-		} catch (IOException e) {
-			throw new LexerException(e);
+		} finally {
+			s.close();
 		}
+		addMacro(m);
 	}
 
 	/**
@@ -356,8 +350,7 @@ public class Preprocessor implements Closeable {
 	 *
 	 * @throws LexerException if the definition fails or is otherwise illegal.
 	 */
-	public void addMacro(@NonNull String name)
-			throws LexerException {
+	public void addMacro(@NonNull String name) {
 		addMacro(name, "1");
 	}
 
@@ -403,8 +396,7 @@ public class Preprocessor implements Closeable {
 		states.push(new State(top));
 	}
 
-	private void pop_state()
-			throws LexerException {
+	private void pop_state() {
 		State s = states.pop();
 		if (states.isEmpty()) {
 			error(0, 0, "#" + "endif without #" + "if");
@@ -462,8 +454,7 @@ public class Preprocessor implements Closeable {
 	 * @throws IOException if an I/O error occurs.
 	 */
 	@CheckForNull
-	protected Token pop_source(boolean linemarker)
-			throws IOException {
+	protected Token pop_source(boolean linemarker) {
 		if (listener != null)
 			listener.handleSourceChange(this.source, SourceChangeEvent.POP);
 		Source s = this.source;
@@ -488,8 +479,7 @@ public class Preprocessor implements Closeable {
 		return null;
 	}
 
-	protected void pop_source()
-			throws IOException {
+	protected void pop_source() {
 		pop_source(false);
 	}
 
@@ -524,9 +514,7 @@ public class Preprocessor implements Closeable {
 	}
 
 	@NonNull
-	private Token source_token()
-			throws IOException,
-			LexerException {
+	private Token source_token() {
 		if (source_token != null) {
 			Token tok = source_token;
 			source_token = null;
@@ -571,9 +559,7 @@ public class Preprocessor implements Closeable {
 				|| (type == CPPCOMMENT);
 	}
 
-	private Token source_token_nonwhite()
-			throws IOException,
-			LexerException {
+	private Token source_token_nonwhite() {
 		Token tok;
 		do {
 			tok = source_token();
@@ -589,9 +575,7 @@ public class Preprocessor implements Closeable {
 	 *
 	 * This method can, as of recent patches, return a P_LINE token.
 	 */
-	private Token source_skipline(boolean white)
-			throws IOException,
-			LexerException {
+	private Token source_skipline(boolean white) {
 		// (new Exception("skipping line")).printStackTrace(System.out);
 		Source s = getSource();
 		Token tok = s.skipline(white);
@@ -606,9 +590,7 @@ public class Preprocessor implements Closeable {
 	}
 
 	/* processes and expands a macro. */
-	private boolean macro(Macro m, Token orig)
-			throws IOException,
-			LexerException {
+	private boolean macro(Macro m, Token orig) {
 		Token tok;
 		List<Argument> args;
 
@@ -811,9 +793,7 @@ public class Preprocessor implements Closeable {
 	 */
 	/* I'd rather this were done lazily, but doing so breaks spec. */
 	@NonNull
-	List<Token> expand(@NonNull List<Token> arg)
-			throws IOException,
-			LexerException {
+	List<Token> expand(@NonNull List<Token> arg) {
 		List<Token> expansion = new ArrayList<Token>();
 		boolean space = false;
 
@@ -847,9 +827,7 @@ public class Preprocessor implements Closeable {
 	}
 
 	/* processes a #define directive */
-	private Token define()
-			throws IOException,
-			LexerException {
+	private Token define() {
 		Token tok = source_token_nonwhite();
 		if (tok.getType() != IDENTIFIER) {
 			error(tok, "Expected identifier");
@@ -1020,9 +998,7 @@ public class Preprocessor implements Closeable {
 	}
 
 	@NonNull
-	private Token undef()
-			throws IOException,
-			LexerException {
+	private Token undef() {
 		Token tok = source_token_nonwhite();
 		if (tok.getType() != IDENTIFIER) {
 			error(tok,
@@ -1049,8 +1025,7 @@ public class Preprocessor implements Closeable {
 	 * @return true if the file was successfully included, false otherwise.
 	 * @throws IOException if an I/O error occurs.
 	 */
-	protected boolean include(@NonNull VirtualFile file)
-			throws IOException {
+	protected boolean include(@NonNull VirtualFile file) {
 		// System.out.println("Try to include " + ((File)file).getAbsolutePath());
 		if (!file.isFile())
 			return false;
@@ -1069,8 +1044,7 @@ public class Preprocessor implements Closeable {
 	 * @return true if the file was successfully included, false otherwise.
 	 * @throws IOException if an I/O error occurs.
 	 */
-	protected boolean include(@NonNull Iterable<String> path, @NonNull String name)
-			throws IOException {
+	protected boolean include(@NonNull Iterable<String> path, @NonNull String name) {
 		for (String dir : path) {
 			VirtualFile file = getFileSystem().getFile(dir, name);
 			if (include(file))
@@ -1087,9 +1061,7 @@ public class Preprocessor implements Closeable {
 	 */
 	private void include(
 			@CheckForNull String parent, int line,
-			@NonNull String name, boolean quoted, boolean next)
-			throws IOException,
-			LexerException {
+			@NonNull String name, boolean quoted, boolean next) {
 		VirtualFile file = filesystem.getFile(name);
 		if (include(file))
 			return;
@@ -1100,9 +1072,7 @@ public class Preprocessor implements Closeable {
 	}
 
 	@NonNull
-	private Token include(boolean next)
-			throws IOException,
-			LexerException {
+	private Token include(boolean next) {
 		LexerSource lexer = (LexerSource) source;
 		try {
 			lexer.setInclude(true);
@@ -1166,8 +1136,7 @@ public class Preprocessor implements Closeable {
 		}
 	}
 
-	protected void pragma_once(@NonNull Token name)
-			throws IOException, LexerException {
+	protected void pragma_once(@NonNull Token name) {
 		Source s = this.source;
 		if (!onceseenpaths.add(s.getPath())) {
 			Token mark = pop_source(true);
@@ -1177,9 +1146,7 @@ public class Preprocessor implements Closeable {
 		}
 	}
 
-	protected void pragma(@NonNull Token name, @NonNull List<Token> value)
-			throws IOException,
-			LexerException {
+	protected void pragma(@NonNull Token name, @NonNull List<Token> value) {
 		if (getFeature(Feature.PRAGMA_ONCE)) {
 			if ("once".equals(name.getText())) {
 				pragma_once(name);
@@ -1192,9 +1159,7 @@ public class Preprocessor implements Closeable {
 	}
 
 	@NonNull
-	private Token pragma()
-			throws IOException,
-			LexerException {
+	private Token pragma() {
 		Token name;
 
 		NAME: while (true) {
@@ -1264,9 +1229,7 @@ public class Preprocessor implements Closeable {
 	}
 
 	/* For #error and #warning. */
-	private void error(@NonNull Token pptok, boolean is_error)
-			throws IOException,
-			LexerException {
+	private void error(@NonNull Token pptok, boolean is_error) {
 		StringBuilder buf = new StringBuilder();
 		buf.append('#').append(pptok.getText()).append(' ');
 		/* Peculiar construction to ditch first whitespace. */
@@ -1294,9 +1257,7 @@ public class Preprocessor implements Closeable {
 	 * causes token() to simply chew the entire input line.
 	 */
 	@NonNull
-	private Token expanded_token()
-			throws IOException,
-			LexerException {
+	private Token expanded_token() {
 		while (true) {
 			Token tok = source_token();
 			// System.out.println("Source token is " + tok);
@@ -1314,9 +1275,7 @@ public class Preprocessor implements Closeable {
 	}
 
 	@NonNull
-	private Token expanded_token_nonwhite()
-			throws IOException,
-			LexerException {
+	private Token expanded_token_nonwhite() {
 		Token tok;
 		do {
 			tok = expanded_token();
@@ -1329,9 +1288,7 @@ public class Preprocessor implements Closeable {
 	private Token expr_token = null;
 
 	@NonNull
-	private Token expr_token()
-			throws IOException,
-			LexerException {
+	private Token expr_token() {
 		Token tok = expr_token;
 
 		if (tok != null) {
@@ -1384,8 +1341,7 @@ public class Preprocessor implements Closeable {
 		return tok;
 	}
 
-	private void expr_untoken(@NonNull Token tok)
-			throws LexerException {
+	private void expr_untoken(@NonNull Token tok) {
 		if (expr_token != null)
 			throw new InternalException(
 					"Cannot unget two expression tokens.");
@@ -1448,9 +1404,7 @@ public class Preprocessor implements Closeable {
 		return text.charAt(0);
 	}
 
-	private long expr(int priority)
-			throws IOException,
-			LexerException {
+	private long expr(int priority) {
 		/*
 		 * (new Exception("expr(" + priority + ") called")).printStackTrace();
 		 */
@@ -1645,9 +1599,7 @@ public class Preprocessor implements Closeable {
 	}
 
 	@NonNull
-	private Token _token()
-			throws IOException,
-			LexerException {
+	private Token _token() {
 
 		while (true) {
 			Token tok;
@@ -1992,9 +1944,7 @@ public class Preprocessor implements Closeable {
 	}
 
 	@NonNull
-	private Token token_nonwhite()
-			throws IOException,
-			LexerException {
+	private Token token_nonwhite() {
 		Token tok;
 		do {
 			tok = _token();
@@ -2012,17 +1962,14 @@ public class Preprocessor implements Closeable {
 	 * @throws InternalException if an unexpected error condition arises.
 	 */
 	@NonNull
-	public Token token()
-			throws IOException,
-			LexerException {
+	public Token token() {
 		Token tok = _token();
 		if (getFeature(Feature.DEBUG))
 			LOG.debug("pp: Returning " + tok);
 		return tok;
 	}
 
-	public void printTo(Appendable appendable) throws IOException,
-			LexerException {
+	public void printTo(StringBuilder builder) {
 		while (true) {
 			Token token = token();
 			if (token == null) {
@@ -2034,25 +1981,23 @@ public class Preprocessor implements Closeable {
 				case CCOMMENT:
 				case CPPCOMMENT:
 					if (!getFeature(Feature.KEEPCOMMENTS)) {
-						appendable.append(' ');
+						builder.append(' ');
 						break;
 					}
 				default:
-					appendable.append(token.getText());
+					builder.append(token.getText());
 					break;
 			}
 		}
 	}
 
-	public StringBuilder print() throws IOException,
-			LexerException {
+	public StringBuilder print() {
 		StringBuilder sb = new StringBuilder();
 		printTo(sb);
 		return sb;
 	}
 
-	public String printToString() throws IOException,
-			LexerException {
+	public String printToString() {
 		return print().toString();
 	}
 
@@ -2075,8 +2020,7 @@ public class Preprocessor implements Closeable {
 	}
 
 	@Override
-	public void close()
-			throws IOException {
+	public void close() {
 		{
 			Source s = source;
 			while (s != null) {

@@ -18,8 +18,6 @@
  */
 package org.anarres.cpp.fs;
 
-import java.io.IOException;
-
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
@@ -29,10 +27,10 @@ public interface VirtualFileSystem {
 	public static final MemoryFileSystem EMPTY = new MemoryFileSystem();
 
 	@NonNull
-	public VirtualFile getFile(@NonNull String path) throws IOException;
+	public VirtualFile getFile(@NonNull String path);
 
 	@NonNull
-	public default VirtualFile getFile(@NonNull String dir, @NonNull String name) throws IOException {
+	public default VirtualFile getFile(@NonNull String dir, @NonNull String name) {
 		return getFile(dir + '/' + name);
 	}
 }

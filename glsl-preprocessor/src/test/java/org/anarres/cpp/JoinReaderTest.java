@@ -21,6 +21,7 @@ public class JoinReaderTest {
 		}
 		assertEquals(-1, j.read());
 		assertEquals(-1, j.read());
+		j.close();
 	}
 
 	private void testJoinReader(String in, String out)

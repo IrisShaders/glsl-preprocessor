@@ -18,7 +18,6 @@
  */
 package org.anarres.cpp;
 
-import java.io.IOException;
 import java.util.*;
 
 class FixedTokenSource extends Source {
@@ -39,9 +38,7 @@ class FixedTokenSource extends Source {
 	}
 
 	@Override
-	public Token token()
-			throws IOException,
-			LexerException {
+	public Token token() {
 		if (idx >= tokens.size())
 			return EOF;
 		return tokens.get(idx++);

@@ -7,8 +7,6 @@ package org.anarres.cpp;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
 import org.slf4j.*;
 
@@ -20,7 +18,7 @@ public class VaArgsPastingTest {
 	private static final Logger LOG = LoggerFactory.getLogger(VaArgsPastingTest.class);
 
 	@Test
-	public void testWhitespacePasting() throws IOException {
+	public void testWhitespacePasting() {
 		String input = "#define REGULAR_ARGS(x, y) foo(x, y)\n"
 				+ "#define REGULAR_ELLIPSIS(x, y...) foo(x, y)\n"
 				+ "#define REGULAR_VAARGS(x, ...) foo(x, __VA_ARGS__)\n"

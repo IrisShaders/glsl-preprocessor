@@ -59,10 +59,14 @@ class JoinReader /* extends Reader */ implements Closeable {
 				pp.getWarning(Warning.TRIGRAPHS));
 	}
 
-	private int __read() throws IOException {
+	private int __read() {
 		if (uptr > 0)
 			return unget[--uptr];
-		return in.read();
+		try {
+			return in.read();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private void _unread(int c) {
@@ -71,16 +75,14 @@ class JoinReader /* extends Reader */ implements Closeable {
 		assert uptr <= unget.length : "JoinReader ungets too many characters";
 	}
 
-	protected void warning(String msg)
-			throws LexerException {
+	protected void warning(String msg) {
 		if (source != null)
 			source.warning(msg);
 		else
 			throw new LexerException(msg);
 	}
 
-	private char trigraph(char raw, char repl)
-			throws IOException, LexerException {
+	private char trigraph(char raw, char repl) {
 		if (trigraphs) {
 			if (warnings)
 				warning("trigraph ??" + raw + " converted to " + repl);
@@ -94,8 +96,7 @@ class JoinReader /* extends Reader */ implements Closeable {
 		}
 	}
 
-	private int _read()
-			throws IOException, LexerException {
+	private int _read() {
 		int c = __read();
 		if (c == '?' && (trigraphs || warnings)) {
 			int d = __read();
@@ -128,8 +129,7 @@ class JoinReader /* extends Reader */ implements Closeable {
 		return c;
 	}
 
-	public int read()
-			throws IOException, LexerException {
+	public int read() {
 		if (flushnl) {
 			if (newlines > 0) {
 				newlines--;
@@ -177,8 +177,7 @@ class JoinReader /* extends Reader */ implements Closeable {
 		}
 	}
 
-	public int read(char cbuf[], int off, int len)
-			throws IOException, LexerException {
+	public int read(char cbuf[], int off, int len) {
 		for (int i = 0; i < len; i++) {
 			int ch = read();
 			if (ch == -1)
@@ -189,9 +188,12 @@ class JoinReader /* extends Reader */ implements Closeable {
 	}
 
 	@Override
-	public void close()
-			throws IOException {
-		in.close();
+	public void close() {
+		try {
+			in.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override

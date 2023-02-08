@@ -18,7 +18,6 @@
  */
 package org.anarres.cpp;
 
-import java.io.IOException;
 import java.util.*;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -40,9 +39,7 @@ class Argument extends ArrayList<Token> {
 		add(tok);
 	}
 
-	void expand(@NonNull Preprocessor p)
-			throws IOException,
-			LexerException {
+	void expand(@NonNull Preprocessor p) {
 		/* Cache expansion. */
 		if (expansion == null) {
 			this.expansion = p.expand(this);

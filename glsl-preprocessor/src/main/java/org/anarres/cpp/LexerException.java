@@ -23,13 +23,23 @@ package org.anarres.cpp;
  *
  * Note to users: I don't really like the name of this class. S.
  */
-public class LexerException extends Exception {
+public class LexerException extends RuntimeException {
+	public LexerException() {
+	}
 
-	public LexerException(String msg) {
-		super(msg);
+	public LexerException(String message) {
+		super(message);
 	}
 
 	public LexerException(Throwable cause) {
 		super(cause);
+	}
+
+	public LexerException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public LexerException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
 	}
 }

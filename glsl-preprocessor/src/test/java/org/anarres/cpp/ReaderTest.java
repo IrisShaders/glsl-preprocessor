@@ -17,7 +17,11 @@ public class ReaderTest {
 		Preprocessor pp = new Preprocessor(r);
 		pp.setFileSystem(new ResourceFileSystem());
 		pp.addFeatures(f);
-		return pp.printToString();
+		try {
+			return pp.printToString();
+		} finally {
+			pp.close();
+		}
 	}
 
 	@Test

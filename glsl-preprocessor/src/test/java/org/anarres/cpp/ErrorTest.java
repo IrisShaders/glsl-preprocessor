@@ -1,22 +1,16 @@
 package org.anarres.cpp;
 
-import static org.anarres.cpp.Token.*;
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
 public class ErrorTest {
-
-	private boolean testError(Preprocessor p)
-			throws LexerException,
-			IOException {
+	private boolean testError(Preprocessor p) {
 		while (true) {
 			Token tok = p.token();
-			if (tok.getType() == EOF)
+			if (tok.getType() == Token.EOF)
 				break;
-			if (tok.getType() == INVALID)
+			if (tok.getType() == Token.INVALID)
 				return true;
 		}
 		return false;

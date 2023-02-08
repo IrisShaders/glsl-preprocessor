@@ -20,7 +20,6 @@ package org.anarres.cpp;
 
 import static org.anarres.cpp.Token.*;
 
-import java.io.IOException;
 import java.util.*;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -119,9 +118,7 @@ class MacroTokenSource extends Source {
 	 * 
 	 * @see Macro#addPaste(Token)
 	 */
-	private void paste(@NonNull Token ptok)
-			throws IOException,
-			LexerException {
+	private void paste(@NonNull Token ptok) {
 		// List<Token> out = new ArrayList<Token>();
 		StringBuilder buf = new StringBuilder();
 		// Token err = null;
@@ -194,9 +191,7 @@ class MacroTokenSource extends Source {
 	}
 
 	@Override
-	public Token token()
-			throws IOException,
-			LexerException {
+	public Token token() {
 		while (true) {
 			/* Deal with lexed tokens first. */
 

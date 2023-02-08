@@ -20,7 +20,6 @@ package org.anarres.cpp;
 
 import static org.anarres.cpp.Token.*;
 
-import java.io.IOException;
 import java.util.*;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -47,8 +46,6 @@ public class SourceIterator implements Iterator<Token> {
 			if (tok == null)
 				tok = source.token();
 		} catch (LexerException e) {
-			throw new IllegalStateException(e);
-		} catch (IOException e) {
 			throw new IllegalStateException(e);
 		}
 	}

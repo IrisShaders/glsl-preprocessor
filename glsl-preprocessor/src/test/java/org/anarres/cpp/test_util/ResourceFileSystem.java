@@ -5,7 +5,7 @@
  */
 package org.anarres.cpp.test_util;
 
-import java.io.*;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 
 import org.anarres.cpp.*;
@@ -61,7 +61,7 @@ public class ResourceFileSystem implements VirtualFileSystem {
 		}
 
 		@Override
-		public Source getSource() throws IOException {
+		public Source getSource() {
 			InputStream stream = loader.getResourceAsStream(path);
 			return new InputLexerSource(stream, charset);
 		}

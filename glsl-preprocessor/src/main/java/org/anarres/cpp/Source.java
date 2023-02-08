@@ -20,7 +20,7 @@ package org.anarres.cpp;
 
 import static org.anarres.cpp.Token.*;
 
-import java.io.*;
+import java.io.Closeable;
 import java.util.Iterator;
 
 import edu.umd.cs.findbugs.annotations.*;
@@ -216,9 +216,7 @@ public abstract class Source implements Iterable<Token>, Closeable {
 	 * @see Token
 	 */
 	@NonNull
-	public abstract Token token()
-			throws IOException,
-			LexerException;
+	public abstract Token token();
 
 	/**
 	 * Returns a token iterator for this Source.
@@ -236,9 +234,7 @@ public abstract class Source implements Iterable<Token>, Closeable {
 	 * @return the NL token.
 	 */
 	@NonNull
-	public Token skipline(boolean white)
-			throws IOException,
-			LexerException {
+	public Token skipline(boolean white) {
 		while (true) {
 			Token tok = token();
 			switch (tok.getType()) {
@@ -271,16 +267,14 @@ public abstract class Source implements Iterable<Token>, Closeable {
 		}
 	}
 
-	protected void error(int line, int column, String msg)
-			throws LexerException {
+	protected void error(int line, int column, String msg) {
 		if (listener != null)
 			listener.handleError(this, line, column, msg);
 		else
 			throw new LexerException("Error at " + line + ":" + column + ": " + msg);
 	}
 
-	protected void warning(int line, int column, String msg)
-			throws LexerException {
+	protected void warning(int line, int column, String msg) {
 		if (werror)
 			error(line, column, msg);
 		else if (listener != null)
@@ -289,7 +283,6 @@ public abstract class Source implements Iterable<Token>, Closeable {
 			throw new LexerException("Warning at " + line + ":" + column + ": " + msg);
 	}
 
-	public void close()
-			throws IOException {
+	public void close() {
 	}
 }

@@ -36,9 +36,7 @@ public interface PreprocessorListener {
 	 * implementation. It may simply record the error message, or
 	 * it may throw an exception.
 	 */
-	public void handleWarning(@NonNull Source source, int line, int column,
-			@NonNull String msg)
-			throws LexerException;
+	public void handleWarning(@NonNull Source source, int line, int column, @NonNull String msg);
 
 	/**
 	 * Handles an error.
@@ -47,9 +45,7 @@ public interface PreprocessorListener {
 	 * implementation. It may simply record the error message, or
 	 * it may throw an exception.
 	 */
-	public void handleError(@NonNull Source source, int line, int column,
-			@NonNull String msg)
-			throws LexerException;
+	public void handleError(@NonNull Source source, int line, int column, @NonNull String msg);
 
 	public enum SourceChangeEvent {
 

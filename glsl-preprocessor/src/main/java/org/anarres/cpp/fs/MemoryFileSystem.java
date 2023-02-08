@@ -22,9 +22,9 @@ public class MemoryFileSystem implements VirtualFileSystem {
 	}
 
 	@Override
-	public VirtualFile getFile(String path) throws IOException {
+	public VirtualFile getFile(String path) {
 		if (!files.containsKey(path)) {
-			throw new IOException("File not found: " + path);
+			throw new RuntimeException(new IOException("File not found: " + path));
 		}
 		return files.get(path);
 	}

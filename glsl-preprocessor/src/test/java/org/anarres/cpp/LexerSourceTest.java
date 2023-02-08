@@ -13,8 +13,7 @@ public class LexerSourceTest {
 
 	private static final Logger LOG = LoggerFactory.getLogger(LexerSourceTest.class);
 
-	public static void testLexerSource(String in, boolean textmatch, int... out)
-			throws Exception {
+	public static void testLexerSource(String in, boolean textmatch, int... out) {
 		LOG.info("Testing '" + in + "' => "
 				+ Arrays.toString(out));
 		StringLexerSource s = new StringLexerSource(in);
@@ -32,8 +31,10 @@ public class LexerSourceTest {
 		LOG.info("Token is " + tok);
 		assertType(EOF, tok);
 
-		if (textmatch)
+		if (textmatch) {
 			assertEquals(in, buf.toString());
+		}
+		s.close();
 	}
 
 	@Test

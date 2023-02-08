@@ -1,9 +1,6 @@
 package org.anarres.cpp;
 
-import static org.anarres.cpp.Token.*;
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
@@ -13,20 +10,22 @@ import org.junit.jupiter.api.Test;
  */
 public class NumericValueTest {
 
-	private Token testNumericValue(String in) throws IOException, LexerException {
+	private Token testNumericValue(String in) {
 		StringLexerSource s = new StringLexerSource(in);
+		try {
+			Token tok = s.token();
+			System.out.println("Token is " + tok);
+			assertEquals(Token.NUMBER, tok.getType());
 
-		Token tok = s.token();
-		System.out.println("Token is " + tok);
-		assertEquals(NUMBER, tok.getType());
-
-		Token eof = s.token();
-		assertEquals(EOF, eof.getType(), "Didn't get EOF, but " + tok);
-
-		return tok;
+			Token eof = s.token();
+			assertEquals(Token.EOF, eof.getType(), "Didn't get EOF, but " + tok);
+			return tok;
+		} finally {
+			s.close();
+		}
 	}
 
-	private void testNumericValue(String in, double out) throws IOException, LexerException {
+	private void testNumericValue(String in, double out) {
 		System.out.println("Testing '" + in + "' -> " + out);
 		Token tok = testNumericValue(in);
 		assertEquals(in, tok.getText());

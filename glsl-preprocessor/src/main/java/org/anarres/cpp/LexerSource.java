@@ -110,8 +110,7 @@ public class LexerSource extends Source {
 	}
 
 	/* Error handling. */
-	private void _error(String msg, boolean error)
-			throws LexerException {
+	private void _error(String msg, boolean error) {
 		int _l = line;
 		int _c = column;
 		if (_c == 0) {
@@ -127,14 +126,12 @@ public class LexerSource extends Source {
 	}
 
 	/* Allow JoinReader to call this. */
-	final void error(String msg)
-			throws LexerException {
+	final void error(String msg) {
 		_error(msg, true);
 	}
 
 	/* Allow JoinReader to call this. */
-	final void warning(String msg)
-			throws LexerException {
+	final void warning(String msg) {
 		_error(msg, false);
 	}
 
@@ -167,9 +164,7 @@ public class LexerSource extends Source {
 		}
 	}
 
-	private int read()
-			throws IOException,
-			LexerException {
+	private int read() {
 		int c;
 		assert ucount <= 2 : "Illegal ucount: " + ucount;
 		switch (ucount) {
@@ -235,8 +230,7 @@ public class LexerSource extends Source {
 	}
 
 	/* You can unget AT MOST one newline. */
-	private void unread(int c)
-			throws IOException {
+	private void unread(int c) {
 		/* XXX Must unread newlines. */
 		if (c != -1) {
 			if (isLineSeparator(c)) {
@@ -265,9 +259,7 @@ public class LexerSource extends Source {
 
 	/* Consumes the rest of the current line into an invalid. */
 	@NonNull
-	private Token invalid(StringBuilder text, String reason)
-			throws IOException,
-			LexerException {
+	private Token invalid(StringBuilder text, String reason) {
 		int d = read();
 		while (!isLineSeparator(d)) {
 			text.append((char) d);
@@ -278,9 +270,7 @@ public class LexerSource extends Source {
 	}
 
 	@NonNull
-	private Token ccomment()
-			throws IOException,
-			LexerException {
+	private Token ccomment() {
 		StringBuilder text = new StringBuilder("/*");
 		int d;
 		do {
@@ -303,9 +293,7 @@ public class LexerSource extends Source {
 	}
 
 	@NonNull
-	private Token cppcomment()
-			throws IOException,
-			LexerException {
+	private Token cppcomment() {
 		StringBuilder text = new StringBuilder("//");
 		int d = read();
 		while (!isLineSeparator(d)) {
@@ -325,9 +313,7 @@ public class LexerSource extends Source {
 	 * @throws IOException    if it goes badly wrong.
 	 * @throws LexerException if it goes wrong.
 	 */
-	private int escape(StringBuilder text)
-			throws IOException,
-			LexerException {
+	private int escape(StringBuilder text) {
 		int d = read();
 		switch (d) {
 			case 'a':
@@ -404,9 +390,7 @@ public class LexerSource extends Source {
 	}
 
 	@NonNull
-	private Token character()
-			throws IOException,
-			LexerException {
+	private Token character() {
 		StringBuilder text = new StringBuilder("'");
 		int d = read();
 		if (d == '\\') {
@@ -451,9 +435,7 @@ public class LexerSource extends Source {
 	}
 
 	@NonNull
-	private Token string(char open, char close)
-			throws IOException,
-			LexerException {
+	private Token string(char open, char close) {
 		StringBuilder text = new StringBuilder();
 		text.append(open);
 
@@ -505,9 +487,7 @@ public class LexerSource extends Source {
 	}
 
 	@NonNull
-	private Token _number_suffix(StringBuilder text, NumericValue value, int d)
-			throws IOException,
-			LexerException {
+	private Token _number_suffix(StringBuilder text, NumericValue value, int d) {
 		int flags = 0; // U, I, L, LL, F, D, MSB
 		while (true) {
 			if (d == 'U' || d == 'u') {
@@ -568,9 +548,7 @@ public class LexerSource extends Source {
 
 	/* Either a decimal part, or a hex exponent. */
 	@NonNull
-	private String _number_part(StringBuilder text, int base, boolean sign)
-			throws IOException,
-			LexerException {
+	private String _number_part(StringBuilder text, int base, boolean sign) {
 		StringBuilder part = new StringBuilder();
 		int d = read();
 		if (sign && (d == '+' || d == '-')) {
@@ -589,9 +567,7 @@ public class LexerSource extends Source {
 
 	/* We do not know whether know the first digit is valid. */
 	@NonNull
-	private Token number_hex(char x)
-			throws IOException,
-			LexerException {
+	private Token number_hex(char x) {
 		StringBuilder text = new StringBuilder("0");
 		text.append(x);
 		String integer = _number_part(text, 16, false);
@@ -627,9 +603,7 @@ public class LexerSource extends Source {
 	 * fine.
 	 */
 	@NonNull
-	private Token number_decimal()
-			throws IOException,
-			LexerException {
+	private Token number_decimal() {
 		StringBuilder text = new StringBuilder();
 		String integer = _number_part(text, 10, false);
 		String fraction = null;
@@ -697,9 +671,7 @@ public class LexerSource extends Source {
 	 * correctly rounded.
 	 */
 	@NonNull
-	private Token number()
-			throws IOException,
-			LexerException {
+	private Token number() {
 		Token tok;
 		int c = read();
 		if (c == '0') {
@@ -721,9 +693,7 @@ public class LexerSource extends Source {
 	}
 
 	@NonNull
-	private Token identifier(int c)
-			throws IOException,
-			LexerException {
+	private Token identifier(int c) {
 		StringBuilder text = new StringBuilder();
 		int d;
 		text.append((char) c);
@@ -741,9 +711,7 @@ public class LexerSource extends Source {
 	}
 
 	@NonNull
-	private Token whitespace(int c)
-			throws IOException,
-			LexerException {
+	private Token whitespace(int c) {
 		StringBuilder text = new StringBuilder();
 		int d;
 		text.append((char) c);
@@ -762,9 +730,7 @@ public class LexerSource extends Source {
 
 	/* No token processed by cond() contains a newline. */
 	@NonNull
-	private Token cond(char c, int yes, int no)
-			throws IOException,
-			LexerException {
+	private Token cond(char c, int yes, int no) {
 		int d = read();
 		if (c == d)
 			return new Token(yes);
@@ -773,9 +739,7 @@ public class LexerSource extends Source {
 	}
 
 	@Override
-	public Token token()
-			throws IOException,
-			LexerException {
+	public Token token() {
 		Token tok = null;
 
 		int _l = line;
@@ -1014,8 +978,7 @@ public class LexerSource extends Source {
 	}
 
 	@Override
-	public void close()
-			throws IOException {
+	public void close() {
 		if (reader != null) {
 			reader.close();
 			reader = null;

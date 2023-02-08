@@ -2,8 +2,6 @@ package org.anarres.cpp;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
 import org.slf4j.*;
 
@@ -17,7 +15,7 @@ public class TokenPastingWhitespaceTest {
 	private static final Logger LOG = LoggerFactory.getLogger(TokenPastingWhitespaceTest.class);
 
 	@Test
-	public void testWhitespacePasting() throws IOException {
+	public void testWhitespacePasting() {
 		Preprocessor pp = new Preprocessor();
 		pp.addInput(new StringLexerSource(
 				"#define ONE(arg) one_##arg\n"
