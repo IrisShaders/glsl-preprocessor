@@ -43,3 +43,6 @@ The modifications made to JCPP in this version of it are extensive; some are spe
 This GLSL-specific fork of JCPP isn't yet complete. Planned/possible upcoming work:
 
 - Cleanup of the existing test files and procedures
+- Tests for `MemoryFileSystem` and `VirtualFileSystem`
+- Tests for `toWhitespace`, `expr_char`, `expr_token`, #error directives, `addMacro`, `addWarning` in `Preprocessor`
+- Tests for line continuation features in `MacroTokenSource`
