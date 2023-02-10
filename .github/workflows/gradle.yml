@@ -34,8 +34,8 @@ jobs:
       with:
         name: Build Result
         path: glsl-preprocessor/build/libs/
-    # - name: Archive test report
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: Test Report
-    #     path: glsl-preprocessor/build/reports/tests/test/
+    - name: Archive test report
+      uses: actions/upload-artifact@v3
+      with:
+        name: Test Report
+        path: glsl-preprocessor/build/reports/tests/test/

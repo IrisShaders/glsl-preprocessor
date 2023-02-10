@@ -4,7 +4,8 @@ plugins {
   id 'maven-publish'
   id 'signing'
   id 'org.danilopianini.publish-on-central' version '0.7.5' // a newer version 2.0.6 exists but it's annoying to use
-  id 'com.adarshr.test-logger' version '3.2.0'
+  id 'jacoco'
+	id 'com.adarshr.test-logger' version '3.2.0'
 	// id "com.github.spotbugs" version "5.0.13"
 }
 
@@ -33,11 +34,27 @@ testing {
   }
 }
 
+test {
+  // report is always generated after tests run
+  finalizedBy jacocoTestReport
+  testLogging.showStandardStreams = true
+  outputs.upToDateWhen { false }
+}
+
 testlogger {
   theme 'standard-parallel'
   slowThreshold 5000
   showSimpleNames true
   showPassed false
+}
+
+jacocoTestReport {
+  // tests are required to run before generating the report
+  dependsOn test
+  reports {
+    xml.required = true
+    html.required = true
+  }
 }
 
 sourceCompatibility = 17

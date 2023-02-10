@@ -33,8 +33,8 @@ The modifications made to JCPP in this version of it are extensive; some are spe
 - Moved file system-related things into the `fs` package
 - Removed file system reading classes. The only file system reading functionality is now `ResourceFileSystem` that is used for testing
 - Added virtual and in-memory file system classes and functionality
-- Added support for GLSL-specific directives like `#extension`, `#version`, `#custom`, and a different type of `#line` that only uses numbers (WIP)
-- Added tests for GLSL-specific situations and functionality (WIP)
+- Added support for GLSL-specific directives like `#extension`, `#version`, `#custom`, and a different type of `#line` that only uses numbers
+- Added tests for GLSL-specific situations and functionality
 - Removed guava and replaced it with builtin methods from the standard library
 - Upgraded the source compatibility to Java 17 (LTS)
 
@@ -42,7 +42,4 @@ The modifications made to JCPP in this version of it are extensive; some are spe
 
 This GLSL-specific fork of JCPP isn't yet complete. Planned/possible upcoming work:
 
-- Support for passthrough of GLSL's `#extension`, `#version`, `#custom`, and a different type of `#line` that only uses numbers
 - Cleanup of the existing test files and procedures
-- Snapshot and parameterized tests for GLSL preprocessing
-- Test coverage reporting and re-enablement of test report uploading in GH Actions
