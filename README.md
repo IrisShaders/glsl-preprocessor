@@ -41,7 +41,7 @@ The modifications made to JCPP in this version of it are extensive; some are spe
 
 ## Upcoming work
 
-This GLSL-specific fork of JCPP isn't yet complete. Planned/possible upcoming work:
+Planned/possible upcoming work:
 
 - Cleanup of the existing test files and procedures
 - Tests for `MemoryFileSystem` and `VirtualFileSystem`
