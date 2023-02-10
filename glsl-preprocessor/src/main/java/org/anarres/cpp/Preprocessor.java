@@ -1919,21 +1919,24 @@ public class Preprocessor implements Closeable {
 							}
 							return pragma();
 
-						// untoken the hash token so that it is re-printed in the output
+						// return the hash token instead and un-token the current token so that it is
+						// handled next time when this method is called
 						case PP_EXTENSION:
 						case PP_VERSION:
 							if (getFeature(Feature.GLSL_PASSTHROUGH)) {
 								source_untoken(tok);
 								return hashToken;
+							} else {
+								throw new LexerException("GLSL passthrough not enabled");
 							}
-							// else fall through
 
 						case PP_CUSTOM:
 							if (getFeature(Feature.GLSL_CUSTOM_PASSTHROUGH)) {
 								source_untoken(tok);
 								return hashToken;
+							} else {
+								throw new LexerException("GLSL custom passthrough not enabled");
 							}
-							// else fall through
 
 						default:
 							/*

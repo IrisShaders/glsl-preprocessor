@@ -125,6 +125,14 @@ org.anarres.cpp.InternalException: Bad token [#@1,17]:"#"
 ]
 
 
+testPreprocessor[errors,GLSL_CUSTOM_PASSTHROUGH_aDv7vwg7JM7S15pnkSb2Vvu1P7U=]=[
+#version
+
+<><><><><><><><><><><><><><><><><><><><><><><><><>
+org.anarres.cpp.LexerException: GLSL passthrough not enabled
+]
+
+
 testPreprocessor[errors,GLSL_PASSTHROUGH,GLSL_CUSTOM_PASSTHROUGH_SkPEvQvuleWLKW47WWP78/taGeU=]=[
 #pragma foo bar fdafds a
 
@@ -133,10 +141,9 @@ org.anarres.cpp.LexerException: Warning at 1:8: Unknown #pragma: foo
 ]
 
 
-testPreprocessor[errors,GLSL_PASSTHROUGH_aDv7vwg7JM7S15pnkSb2Vvu1P7U=]=[
-#version
+testPreprocessor[errors,GLSL_PASSTHROUGH_qT/RZ9gQ4GE2a78x7LH4SKT2FWo=]=[
+#custom fds
 
 <><><><><><><><><><><><><><><><><><><><><><><><><>
-#version
-
+org.anarres.cpp.LexerException: GLSL custom passthrough not enabled
 ]

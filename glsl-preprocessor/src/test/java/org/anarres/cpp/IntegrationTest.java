@@ -1,6 +1,7 @@
 package org.anarres.cpp;
 
 import static org.anarres.cpp.test_util.AssertUtil.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.anarres.cpp.test_util.*;
 import org.anarres.cpp.test_util.TestCaseProvider.Spacing;
@@ -33,6 +34,7 @@ public class IntegrationTest {
 		String output;
 		try {
 			output = pp.printToString();
+			assertFalse(errors, "It should throw errors when specified.");
 		} catch (Exception e) {
 			if (!errors) {
 				throw e;

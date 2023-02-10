@@ -47,8 +47,11 @@ FOO is defined here
 §testPreprocessor errors,GLSL_CUSTOM_PASSTHROUGH:
 #custom fdskalfjk#fdsfldsj
 
-§testPreprocessor errors,GLSL_PASSTHROUGH:
+§testPreprocessor errors,GLSL_CUSTOM_PASSTHROUGH:
 #version
+
+§testPreprocessor errors,GLSL_PASSTHROUGH:
+#custom fds
 
 §testPreprocessor GLSL_PASSTHROUGH,GLSL_CUSTOM_PASSTHROUGH:
 #version
