@@ -11,7 +11,6 @@ import org.slf4j.*;
  * @author shevek
  */
 public class TokenPastingWhitespaceTest {
-
 	private static final Logger LOG = LoggerFactory.getLogger(TokenPastingWhitespaceTest.class);
 
 	@Test

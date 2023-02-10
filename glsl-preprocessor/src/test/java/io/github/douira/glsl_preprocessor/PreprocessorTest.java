@@ -9,7 +9,6 @@ import org.junit.jupiter.api.*;
 import org.slf4j.*;
 
 public class PreprocessorTest {
-
 	private static final Logger LOG = LoggerFactory.getLogger(PreprocessorTest.class);
 
 	private OutputStreamWriter writer;

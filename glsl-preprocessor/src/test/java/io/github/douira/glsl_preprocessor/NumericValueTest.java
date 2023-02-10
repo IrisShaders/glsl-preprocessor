@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
  * @author shevek
  */
 public class NumericValueTest {
-
 	private Token testNumericValue(String in) {
 		StringLexerSource s = new StringLexerSource(in);
 		try {

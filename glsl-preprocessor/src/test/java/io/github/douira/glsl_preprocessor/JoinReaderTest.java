@@ -7,7 +7,6 @@ import java.io.StringReader;
 import org.junit.jupiter.api.Test;
 
 public class JoinReaderTest {
-
 	private void testJoinReader(String in, String out, boolean tg)
 			throws Exception {
 		System.out.println("Testing " + in + " => " + out);

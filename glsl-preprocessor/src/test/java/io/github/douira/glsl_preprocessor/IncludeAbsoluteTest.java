@@ -14,7 +14,6 @@ import io.github.douira.glsl_preprocessor.fs.MemoryFileSystem;
  * @author shevek
  */
 public class IncludeAbsoluteTest {
-
 	private static final Logger LOG = LoggerFactory.getLogger(IncludeAbsoluteTest.class);
 
 	@Test

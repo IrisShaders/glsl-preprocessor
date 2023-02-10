@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.*;
 
 public class LexerSourceTest {
-
 	private static final Logger LOG = LoggerFactory.getLogger(LexerSourceTest.class);
 
 	public static void testLexerSource(String in, boolean textmatch, int... out) {
