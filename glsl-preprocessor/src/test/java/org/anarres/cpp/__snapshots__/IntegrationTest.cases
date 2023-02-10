@@ -1,0 +1,61 @@
+§testPreprocessor GLSL_PASSTHROUGH:
+#version 330 core
+foo bar
+#extension foo : bar
+#define DEFINED 4
+int a = DEFINED;
+
+§testPreprocessor GLSL_PASSTHROUGH:
+#extension GL_ARB_texture_rectangle : enable
+#extension GL_ARB_texture_rectangle : enable
+#version 330 fjdsal fjsda fisda jfiojfdsaflkds
+#line 1
+#if 0
+#endif
+#line 2
+int a = 4;
+#define BAR 4
+#define FOO 4
+if (a == BAR) {
+	a = FOO;
+}
+
+§testPreprocessor GLSL_PASSTHROUGH:
+#line 5 324
+#version 330 core
+int a = 4;
+#line 43 453
+
+foo bar 
+#ifdef FOO
+FOO is defined here
+#endif
+#define FOO 5
+foo bar
+#ifdef FOO
+FOO is defined here
+#endif
+
+§testPreprocessor GLSL_PASSTHROUGH,GLSL_CUSTOM_PASSTHROUGH,ARBITRARY_PRAGMAS:
+#custom fdsaflsj 43lk j43kljgkld "fds" +,--,fds
+#version 330 core
+#pragma foo bar fdafds a
+
+§testPreprocessor errors,GLSL_PASSTHROUGH,GLSL_CUSTOM_PASSTHROUGH:
+#pragma foo bar fdafds a
+
+§testPreprocessor errors,GLSL_CUSTOM_PASSTHROUGH:
+#custom fdskalfjk#fdsfldsj
+
+§testPreprocessor errors,GLSL_PASSTHROUGH:
+#version
+
+§testPreprocessor GLSL_PASSTHROUGH,GLSL_CUSTOM_PASSTHROUGH:
+#version
+#extension
+#custom
+
+§testPreprocessor errors,ARBITRARY_PRAGMAS:
+#pragma
+
+§

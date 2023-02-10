@@ -49,7 +49,8 @@ public enum Feature {
 	PRAGMA_ONCE,
 
 	/** GLSL support */
-	GLSL,
+	GLSL_PASSTHROUGH,
+	GLSL_CUSTOM_PASSTHROUGH,
 	/** arbitrary pragmas */
 	ARBITRARY_PRAGMAS,
 	/** #custom directive */

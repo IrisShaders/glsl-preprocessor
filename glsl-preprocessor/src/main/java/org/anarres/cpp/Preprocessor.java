@@ -545,6 +545,13 @@ public class Preprocessor implements Closeable {
 		}
 	}
 
+	/**
+	 * Function that quques a token to be returned by the next call to
+	 * {@link #source_token()} which effectively returns it the next time
+	 * {@link #token()} is called.
+	 * 
+	 * @param tok The token to store for returning next
+	 */
 	private void source_untoken(Token tok) {
 		if (this.source_token != null)
 			throw new IllegalStateException("Cannot return two tokens");
@@ -1594,7 +1601,6 @@ public class Preprocessor implements Closeable {
 
 	@NonNull
 	private Token _token() {
-
 		while (true) {
 			Token tok;
 			if (!isActive()) {
@@ -1743,6 +1749,7 @@ public class Preprocessor implements Closeable {
 				// break;
 
 				case HASH:
+					Token hashToken = tok;
 					tok = source_token_nonwhite();
 					// (new Exception("here")).printStackTrace();
 					switch (tok.getType()) {
@@ -1766,44 +1773,45 @@ public class Preprocessor implements Closeable {
 					}
 
 					switch (ppcmd) {
-
 						case PP_DEFINE:
-							if (!isActive())
+							if (!isActive()) {
 								return source_skipline(false);
-							else
+							} else {
 								return define();
-							// break;
+							}
 
 						case PP_UNDEF:
-							if (!isActive())
+							if (!isActive()) {
 								return source_skipline(false);
-							else
+							} else {
 								return undef();
-							// break;
+							}
 
 						case PP_INCLUDE:
-							if (!isActive())
+							if (!isActive()) {
 								return source_skipline(false);
-							else
+							} else {
 								return include(false);
-							// break;
+							}
+
 						case PP_INCLUDE_NEXT:
-							if (!isActive())
+							if (!isActive()) {
 								return source_skipline(false);
+							}
 							if (!getFeature(Feature.INCLUDENEXT)) {
 								error(tok,
 										"Directive include_next not enabled");
 								return source_skipline(false);
 							}
 							return include(true);
-						// break;
 
 						case PP_WARNING:
 						case PP_ERROR:
-							if (!isActive())
+							if (!isActive()) {
 								return source_skipline(false);
-							else
+							} else {
 								error(tok, ppcmd == PP_ERROR);
+							}
 							break;
 
 						case PP_IF:
@@ -1818,7 +1826,6 @@ public class Preprocessor implements Closeable {
 							if (tok.getType() == NL)
 								return tok;
 							return source_skipline(true);
-						// break;
 
 						case PP_ELIF:
 							State state = states.peek();
@@ -1847,7 +1854,6 @@ public class Preprocessor implements Closeable {
 									return tok;
 								return source_skipline(true);
 							}
-							// break;
 
 						case PP_ELSE:
 							state = states.peek();
@@ -1860,7 +1866,6 @@ public class Preprocessor implements Closeable {
 								state.setActive(!state.isActive());
 								return source_skipline(warnings.contains(Warning.ENDIF_LABELS));
 							}
-							// break;
 
 						case PP_IFDEF:
 							push_state();
@@ -1881,7 +1886,6 @@ public class Preprocessor implements Closeable {
 									return source_skipline(true);
 								}
 							}
-							// break;
 
 						case PP_IFNDEF:
 							push_state();
@@ -1901,22 +1905,35 @@ public class Preprocessor implements Closeable {
 									return source_skipline(true);
 								}
 							}
-							// break;
 
 						case PP_ENDIF:
 							pop_state();
 							return source_skipline(warnings.contains(Warning.ENDIF_LABELS));
-						// break;
 
 						case PP_LINE:
 							return source_skipline(false);
-						// break;
 
 						case PP_PRAGMA:
-							if (!isActive())
+							if (!isActive()) {
 								return source_skipline(false);
+							}
 							return pragma();
-						// break;
+
+						// untoken the hash token so that it is re-printed in the output
+						case PP_EXTENSION:
+						case PP_VERSION:
+							if (getFeature(Feature.GLSL_PASSTHROUGH)) {
+								source_untoken(tok);
+								return hashToken;
+							}
+							// else fall through
+
+						case PP_CUSTOM:
+							if (getFeature(Feature.GLSL_CUSTOM_PASSTHROUGH)) {
+								source_untoken(tok);
+								return hashToken;
+							}
+							// else fall through
 
 						default:
 							/*
