@@ -34,9 +34,10 @@ The modifications made to JCPP in this version of it are extensive; some are spe
 - Removed file system reading classes. The only file system reading functionality is now `ResourceFileSystem` that is used for testing
 - Added virtual and in-memory file system classes and functionality
 - Added support for GLSL-specific directives like `#extension`, `#version`, `#custom`, and a different type of `#line` that only uses numbers
-- Added tests for GLSL-specific situations and functionality
+- Added snapshot and error tests for GLSL-specific situations and functionality
 - Removed guava and replaced it with builtin methods from the standard library
 - Upgraded the source compatibility to Java 17 (LTS)
+- Removed dead code and cleaned up some things
 
 ## Upcoming work
 
