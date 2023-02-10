@@ -31,6 +31,7 @@ The modifications made to JCPP in this version of it are extensive; some are spe
 - Removed checked exceptions
 - Reformatted much of the code
 - Moved file system-related things into the `fs` package
+- Added virtual file system functionality and improved string-handling aspects in `Preprocessor`
 - Removed file system reading classes. The only file system reading functionality is now `ResourceFileSystem` that is used for testing
 - Added virtual and in-memory file system classes and functionality
 - Added support for GLSL-specific directives like `#extension`, `#version`, `#custom`, and a different type of `#line` that only uses numbers
