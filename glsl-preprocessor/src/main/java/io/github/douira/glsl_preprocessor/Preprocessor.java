@@ -100,6 +100,9 @@ public class Preprocessor implements Closeable {
 	private final Set<String> onceseenpaths = new HashSet<String>();
 	private final List<VirtualFile> includes = new ArrayList<VirtualFile>();
 
+	private final Map<String, Integer> sourceNumbers = new HashMap<>();
+	private int sourceNumber = 0;
+
 	private final Set<Feature> features = EnumSet.noneOf(Feature.class);
 	private final Set<Warning> warnings = EnumSet.noneOf(Warning.class);
 	private VirtualFileSystem filesystem = VirtualFileSystem.EMPTY;
@@ -501,15 +504,27 @@ public class Preprocessor implements Closeable {
 	@NonNull
 	private Token line_token(int line, @CheckForNull String name, @NonNull String extra) {
 		StringBuilder buf = new StringBuilder();
-		buf.append("#line ").append(line)
-				.append(" \"");
-		/* XXX This call to escape(name) is correct but ugly. */
-		if (name == null)
-			buf.append("<no file>");
-		else
-			MacroTokenSource.escape(buf, name);
-		buf.append("\"").append(extra).append("\n");
+		buf.append("#line ").append(line);
+
+		if (getFeature(Feature.NAMEDLINEMARKERS)) {
+			buf.append(" \"");
+			/* XXX This call to escape(name) is correct but ugly. */
+			if (name == null)
+				buf.append("<no file>");
+			else
+				MacroTokenSource.escape(buf, name);
+
+			buf.append("\"");
+		} else {
+			buf.append(" ").append(sourceNumbers.computeIfAbsent(name, n -> sourceNumber++));
+		}
+
+		buf.append(extra).append("\n");
 		return new Token(P_LINE, line, 0, buf.toString(), null);
+	}
+
+	public Map<String, Integer> getSourceNumbers() {
+		return sourceNumbers;
 	}
 
 	@NonNull

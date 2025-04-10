@@ -31,6 +31,9 @@ public enum Feature {
 	/** Outputs linemarker tokens. */
 	LINEMARKERS,
 
+	/** Outputs linemarker tokens by file name. */
+	NAMEDLINEMARKERS,
+
 	/** Reports tokens of type INVALID as errors. */
 	CSYNTAX,
 
