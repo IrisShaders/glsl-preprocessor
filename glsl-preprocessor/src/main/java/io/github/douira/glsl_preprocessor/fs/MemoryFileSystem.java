@@ -18,7 +18,7 @@ public class MemoryFileSystem implements VirtualFileSystem {
 	}
 
 	public void addFile(String path, String content) {
-		addFile(path, new StringFile(content));
+		addFile(path, new StringFile(path, content));
 	}
 
 	@Override

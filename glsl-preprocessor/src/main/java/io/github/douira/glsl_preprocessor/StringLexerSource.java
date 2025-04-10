@@ -28,15 +28,19 @@ import java.io.StringReader;
  */
 public class StringLexerSource extends LexerSource {
 
+	private final String name;
+
 	/**
 	 * Creates a new Source for lexing the given String.
 	 *
 	 * @param string  The input string to lex.
+	 * @param name  The name of this source.
 	 * @param ppvalid true if preprocessor directives are to be
 	 *                honoured within the string.
 	 */
-	public StringLexerSource(String string, boolean ppvalid) {
+	public StringLexerSource(String string, String name, boolean ppvalid) {
 		super(new StringReader(string), ppvalid);
+		this.name = name;
 	}
 
 	/**
@@ -50,11 +54,29 @@ public class StringLexerSource extends LexerSource {
 	 * @param string The input string to lex.
 	 */
 	public StringLexerSource(String string) {
-		this(string, false);
+		this(string, "string literal", false);
+	}
+
+	/**
+	 * Creates a new Source for lexing the given String.
+	 *
+	 * Equivalent to calling <code>new StringLexerSource(string, "string literal", ppvalid)</code>.
+	 *
+	 * @param string The input string to lex.
+	 * @param ppvalid true if preprocessor directives are to be
+	 *                honoured within the string.
+	 */
+	public StringLexerSource(String string, boolean ppvalid) {
+		this(string, "string literal", ppvalid);
 	}
 
 	@Override
 	public String toString() {
 		return "string literal";
+	}
+
+	@Override
+	public String getName() {
+		return name;
 	}
 }

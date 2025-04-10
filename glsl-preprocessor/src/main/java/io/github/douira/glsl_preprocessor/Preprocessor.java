@@ -519,7 +519,7 @@ public class Preprocessor implements Closeable {
 			buf.append(" ").append(sourceNumbers.computeIfAbsent(name, n -> sourceNumber++));
 		}
 
-		buf.append(extra).append("\n");
+		buf.append("\n");
 		return new Token(P_LINE, line, 0, buf.toString(), null);
 	}
 
