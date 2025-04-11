@@ -12,6 +12,6 @@ public class AssertUtil {
 			throw new RuntimeException(e);
 		}
 		digest.update(content.getBytes());
-		return Base64.getEncoder().encodeToString(digest.digest());
+		return Base64.getEncoder().encodeToString(digest.digest()).replace("=", "");
 	}
 }

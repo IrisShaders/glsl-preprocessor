@@ -19,25 +19,25 @@ public class VaArgsPastingTest {
 
 	@Test
 	public void testWhitespacePasting() {
-		String input = "#define REGULAR_ARGS(x, y) foo(x, y)\n"
-				+ "#define REGULAR_ELLIPSIS(x, y...) foo(x, y)\n"
-				+ "#define REGULAR_VAARGS(x, ...) foo(x, __VA_ARGS__)\n"
-				+ "#define PASTE_ARGS(x, y) foo(x, ## y)\n"
-				+ "#define PASTE_ELLIPSIS(x, y...) foo(x, ## y)\n"
-				+ "#define PASTE_VAARGS(x, ...) foo(x, ## __VA_ARGS__)\n"
-				+ ""
-				+ "REGULAR_ARGS(a, b) // REGULAR_ARGS 2\n"
-				+ "REGULAR_ELLIPSIS(a, b) // REGULAR_ELLIPSIS 2\n"
-				+ "REGULAR_ELLIPSIS(a) // REGULAR_ELLIPSIS 1\n"
-				+ "REGULAR_VAARGS(a, b) // REGULAR_VAARGS 2\n"
-				+ "REGULAR_VAARGS(a) // REGULAR_VAARGS 1\n"
-				+ ""
-				+ "PASTE_ARGS(a, b) // PASTE_ARGS 2\n"
-				+ "PASTE_ELLIPSIS(a, b) // PASTE_ELLIPSIS 2\n"
-				+ "PASTE_ELLIPSIS(a) // PASTE_ELLIPSIS 1\n"
-				+ "PASTE_VAARGS(a, b) // PASTE_VAARGS 2\n"
-				+ "PASTE_VAARGS(a) // PASTE_VAARGS 1\n";
-		LOG.info("Input is:\n" + input);
+		String input = """
+				#define REGULAR_ARGS(x, y) foo(x, y)
+				#define REGULAR_ELLIPSIS(x, y...) foo(x, y)
+				#define REGULAR_VAARGS(x, ...) foo(x, __VA_ARGS__)
+				#define PASTE_ARGS(x, y) foo(x, ## y)
+				#define PASTE_ELLIPSIS(x, y...) foo(x, ## y)
+				#define PASTE_VAARGS(x, ...) foo(x, ## __VA_ARGS__)
+				REGULAR_ARGS(a, b) // REGULAR_ARGS 2
+				REGULAR_ELLIPSIS(a, b) // REGULAR_ELLIPSIS 2
+				REGULAR_ELLIPSIS(a) // REGULAR_ELLIPSIS 1
+				REGULAR_VAARGS(a, b) // REGULAR_VAARGS 2
+				REGULAR_VAARGS(a) // REGULAR_VAARGS 1
+				PASTE_ARGS(a, b) // PASTE_ARGS 2
+				PASTE_ELLIPSIS(a, b) // PASTE_ELLIPSIS 2
+				PASTE_ELLIPSIS(a) // PASTE_ELLIPSIS 1
+				PASTE_VAARGS(a, b) // PASTE_VAARGS 2
+				PASTE_VAARGS(a) // PASTE_VAARGS 1
+				""";
+		LOG.info("Input is:\n{}", input);
 		Preprocessor pp = new Preprocessor();
 		pp.addFeature(Feature.KEEPCOMMENTS);
 		pp.addInput(new StringLexerSource(input, true));
@@ -49,16 +49,18 @@ public class VaArgsPastingTest {
 		} finally {
 			pp.close();
 		}
-		LOG.info("Output is:\n" + output);
-		assertEquals("foo(a, b) // REGULAR_ARGS 2\n"
-				+ "foo(a, b) // REGULAR_ELLIPSIS 2\n"
-				+ "foo(a, ) // REGULAR_ELLIPSIS 1\n"
-				+ "foo(a, b) // REGULAR_VAARGS 2\n"
-				+ "foo(a, ) // REGULAR_VAARGS 1\n"
-				+ "foo(a,b) // PASTE_ARGS 2\n" // cpp outputs a warning and a space after the comma, similar below.
-				+ "foo(a,b) // PASTE_ELLIPSIS 2\n"
-				+ "foo(a) // PASTE_ELLIPSIS 1\n"
-				+ "foo(a,b) // PASTE_VAARGS 2\n"
-				+ "foo(a) // PASTE_VAARGS 1", output);
+		LOG.info("Output is:\n{}", output);
+		// cpp outputs a warning and a space after the comma, similar below.
+		assertEquals("""
+				foo(a, b) // REGULAR_ARGS 2
+				foo(a, b) // REGULAR_ELLIPSIS 2
+				foo(a, ) // REGULAR_ELLIPSIS 1
+				foo(a, b) // REGULAR_VAARGS 2
+				foo(a, ) // REGULAR_VAARGS 1
+				foo(a,b) // PASTE_ARGS 2
+				foo(a,b) // PASTE_ELLIPSIS 2
+				foo(a) // PASTE_ELLIPSIS 1
+				foo(a,b) // PASTE_VAARGS 2
+				foo(a) // PASTE_VAARGS 1""", output);
 	}
 }
