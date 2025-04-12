@@ -13,21 +13,20 @@ public class LexerSourceTest {
 	private static final Logger LOG = LoggerFactory.getLogger(LexerSourceTest.class);
 
 	public static void testLexerSource(String in, boolean textmatch, int... out) {
-		LOG.info("Testing '" + in + "' => "
-				+ Arrays.toString(out));
+		LOG.info("Testing '{}' => {}", in, Arrays.toString(out));
 		StringLexerSource s = new StringLexerSource(in);
 
 		StringBuilder buf = new StringBuilder();
-		for (int i = 0; i < out.length; i++) {
+		for (int j : out) {
 			Token tok = s.token();
-			LOG.info("Token is " + tok);
-			assertType(out[i], tok);
+			LOG.info("Token is {}", tok);
+			assertType(j, tok);
 			// assertEquals(col, tok.getColumn());
 			buf.append(tok.getText());
 		}
 
 		Token tok = s.token();
-		LOG.info("Token is " + tok);
+		LOG.info("Token is {}", tok);
 		assertType(EOF, tok);
 
 		if (textmatch) {
@@ -37,8 +36,7 @@ public class LexerSourceTest {
 	}
 
 	@Test
-	public void testLexerSource()
-			throws Exception {
+	public void testLexerSource() {
 
 		testLexerSource("int a = 5;", true,
 				IDENTIFIER, WHITESPACE, IDENTIFIER, WHITESPACE,
@@ -88,7 +86,7 @@ public class LexerSourceTest {
 	}
 
 	@Test
-	public void testNumbers() throws Exception {
+	public void testNumbers() {
 		testLexerSource("0", true, NUMBER);
 		testLexerSource("045", true, NUMBER);
 		testLexerSource("45", true, NUMBER);
@@ -101,7 +99,7 @@ public class LexerSourceTest {
 	}
 
 	@Test
-	public void testNumbersSuffix() throws Exception {
+	public void testNumbersSuffix() {
 		testLexerSource("6f", true, NUMBER);
 		testLexerSource("6d", true, NUMBER);
 		testLexerSource("6l", true, NUMBER);
@@ -117,7 +115,7 @@ public class LexerSourceTest {
 	}
 
 	@Test
-	public void testNumbersInvalid() throws Exception {
+	public void testNumbersInvalid() {
 		// testLexerSource("0x foo", true, INVALID, WHITESPACE, IDENTIFIER); // FAIL
 		testLexerSource("6x foo", true, INVALID, WHITESPACE, IDENTIFIER);
 		testLexerSource("6g foo", true, INVALID, WHITESPACE, IDENTIFIER);
@@ -126,14 +124,14 @@ public class LexerSourceTest {
 	}
 
 	@Test
-	public void testUnterminatedComment() throws Exception {
+	public void testUnterminatedComment() {
 		testLexerSource("5 /*", false, NUMBER, WHITESPACE, INVALID); // Bug #15
 		testLexerSource("5 //", false, NUMBER, WHITESPACE, CPPCOMMENT);
 	}
 
 	@Test
-	public void testUnicode() throws Exception {
-		testLexerSource("foo \u2018bar\u2019 baz", true, IDENTIFIER, WHITESPACE, 8216, IDENTIFIER, 8217,
+	public void testUnicode() {
+		testLexerSource("foo ‘bar’ baz", true, IDENTIFIER, WHITESPACE, 8216, IDENTIFIER, 8217,
 				WHITESPACE,
 				IDENTIFIER);
 	}

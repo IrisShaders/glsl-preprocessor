@@ -25,8 +25,8 @@ import io.github.douira.glsl_preprocessor.Source;
  * An extremely lightweight virtual file interface.
  */
 public interface VirtualFile {
-	public boolean isFile();
+	boolean isFile();
 
 	@NonNull
-	public Source getSource();
+	Source getSource();
 }

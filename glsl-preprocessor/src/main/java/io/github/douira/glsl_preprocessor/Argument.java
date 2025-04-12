@@ -24,7 +24,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * A macro argument.
- *
+ * <p>
  * This encapsulates a raw and preprocessed token stream.
  */
 class Argument extends ArrayList<Token> {
@@ -58,8 +58,9 @@ class Argument extends ArrayList<Token> {
 		buf.append("Argument(");
 		// buf.append(super.toString());
 		buf.append("raw=[ ");
-		for (int i = 0; i < size(); i++)
-			buf.append(get(i).getText());
+		for (Token value : this) {
+			buf.append(value.getText());
+		}
 		buf.append(" ];expansion=[ ");
 		if (expansion == null)
 			buf.append("null");

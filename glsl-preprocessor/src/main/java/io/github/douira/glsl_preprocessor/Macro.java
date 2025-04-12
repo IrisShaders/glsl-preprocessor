@@ -30,7 +30,7 @@ import java.util.*;
 public class Macro {
 
 	private Source source;
-	private String name;
+	private final String name;
 	/*
 	 * It's an explicit decision to keep these around here. We don't
 	 * need to; the argument token type is M_ARG and the value
@@ -39,14 +39,14 @@ public class Macro {
 	 */
 	private List<String> args;
 	private boolean variadic;
-	private List<Token> tokens;
+	private final List<Token> tokens;
 
 	public Macro(Source source, String name) {
 		this.source = source;
 		this.name = name;
 		this.args = null;
 		this.variadic = false;
-		this.tokens = new ArrayList<Token>();
+		this.tokens = new ArrayList<>();
 	}
 
 	public Macro(String name) {
@@ -152,7 +152,7 @@ public class Macro {
 		boolean paste = false;
 		for (Token tok : tokens) {
 			if (tok.getType() == Token.M_PASTE) {
-				assert paste == false : "Two sequential pastes.";
+				assert !paste : "Two sequential pastes.";
 				paste = true;
 				continue;
 			} else {

@@ -17,10 +17,10 @@ public class IncludeAbsoluteTest {
 	private static final Logger LOG = LoggerFactory.getLogger(IncludeAbsoluteTest.class);
 
 	@Test
-	public void testAbsoluteInclude() throws Exception {
+	public void testAbsoluteInclude() {
 		File file = new File("build/resources/test/absolute.h");
 		String input = "#include <" + file.getAbsolutePath() + ">\n";
-		LOG.info("Input: " + input);
+		LOG.info("Input: {}", input);
 		MemoryFileSystem fs = new MemoryFileSystem();
 		fs.addFile(file.getAbsolutePath(), "absolute-result");
 		Preprocessor pp = new Preprocessor();
@@ -28,7 +28,7 @@ public class IncludeAbsoluteTest {
 		pp.addInput(new StringLexerSource(input, true));
 		String output = pp.printToString();
 		pp.close();
-		LOG.info("Output: " + output);
+		LOG.info("Output: {}", output);
 		assertTrue(output.contains("absolute-result"));
 	}
 }

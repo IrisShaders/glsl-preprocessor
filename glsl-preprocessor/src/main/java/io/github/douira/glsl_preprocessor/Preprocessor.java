@@ -97,8 +97,8 @@ public class Preprocessor implements Closeable {
 
 	/* Miscellaneous support. */
 	private int counter = 0;
-	private final Set<String> onceseenpaths = new HashSet<String>();
-	private final List<VirtualFile> includes = new ArrayList<VirtualFile>();
+	private final Set<String> onceseenpaths = new HashSet<>();
+	private final List<VirtualFile> includes = new ArrayList<>();
 
 	private final Set<Feature> features = EnumSet.noneOf(Feature.class);
 	private final Set<Warning> warnings = EnumSet.noneOf(Warning.class);
@@ -328,16 +328,13 @@ public class Preprocessor implements Closeable {
 	 */
 	public void addMacro(@NonNull String name, @NonNull String value) {
 		Macro m = new Macro(name);
-		StringLexerSource s = new StringLexerSource(value);
-		try {
+		try (StringLexerSource s = new StringLexerSource(value)) {
 			while (true) {
 				Token tok = s.token();
 				if (tok.getType() == EOF)
 					break;
 				m.addToken(tok);
 			}
-		} finally {
-			s.close();
 		}
 		addMacro(m);
 	}
@@ -518,7 +515,7 @@ public class Preprocessor implements Closeable {
 			Token tok = source_token;
 			source_token = null;
 			if (getFeature(Feature.DEBUG))
-				LOG.debug("Returning unget token " + tok);
+				LOG.debug("Returning unget token {}", tok);
 			return tok;
 		}
 
@@ -540,7 +537,7 @@ public class Preprocessor implements Closeable {
 				continue;
 			}
 			if (getFeature(Feature.DEBUG))
-				LOG.debug("Returning fresh token " + tok);
+				LOG.debug("Returning fresh token {}", tok);
 			return tok;
 		}
 	}
@@ -630,7 +627,7 @@ public class Preprocessor implements Closeable {
 			 * one empty arg.
 			 */
 			if (tok.getType() != ')' || m.getArgs() > 0) {
-				args = new ArrayList<Argument>();
+				args = new ArrayList<>();
 
 				Argument arg = new Argument();
 				int depth = 0;
@@ -744,10 +741,10 @@ public class Preprocessor implements Closeable {
 
 		if (m == __LINE__) {
 			push_source(new FixedTokenSource(
-					new Token[] { new Token(NUMBER,
-							orig.getLine(), orig.getColumn(),
-							Integer.toString(orig.getLine()),
-							new NumericValue(10, Integer.toString(orig.getLine()))) }),
+							new Token(NUMBER,
+									orig.getLine(), orig.getColumn(),
+									Integer.toString(orig.getLine()),
+									new NumericValue(10, Integer.toString(orig.getLine())))),
 					true);
 		} else if (m == __FILE__) {
 			StringBuilder buf = new StringBuilder("\"");
@@ -771,9 +768,9 @@ public class Preprocessor implements Closeable {
 			buf.append("\"");
 			String text = buf.toString();
 			push_source(new FixedTokenSource(
-					new Token[] { new Token(STRING,
-							orig.getLine(), orig.getColumn(),
-							text, text) }),
+							new Token(STRING,
+									orig.getLine(), orig.getColumn(),
+									text, text)),
 					true);
 		} else if (m == __COUNTER__) {
 			/*
@@ -782,10 +779,10 @@ public class Preprocessor implements Closeable {
 			 */
 			int value = this.counter++;
 			push_source(new FixedTokenSource(
-					new Token[] { new Token(NUMBER,
-							orig.getLine(), orig.getColumn(),
-							Integer.toString(value),
-							new NumericValue(10, Integer.toString(value))) }),
+							new Token(NUMBER,
+									orig.getLine(), orig.getColumn(),
+									Integer.toString(value),
+									new NumericValue(10, Integer.toString(value)))),
 					true);
 		} else {
 			push_source(new MacroTokenSource(m, args), true);
@@ -797,10 +794,10 @@ public class Preprocessor implements Closeable {
 	/**
 	 * Expands an argument.
 	 */
-	/* I'd rather this were done lazily, but doing so breaks spec. */
+	/* I'd rather this was done lazily, but doing so breaks spec. */
 	@NonNull
 	List<Token> expand(@NonNull List<Token> arg) {
-		List<Token> expansion = new ArrayList<Token>();
+		List<Token> expansion = new ArrayList<>();
 		boolean space = false;
 
 		push_source(new FixedTokenSource(arg), false);
@@ -854,7 +851,7 @@ public class Preprocessor implements Closeable {
 		if (tok.getType() == '(') {
 			tok = source_token_nonwhite();
 			if (tok.getType() != ')') {
-				args = new ArrayList<String>();
+				args = new ArrayList<>();
 				ARGS: while (true) {
 					switch (tok.getType()) {
 						case IDENTIFIER:
@@ -927,9 +924,7 @@ public class Preprocessor implements Closeable {
 		tok = source_token_nonwhite();
 		EXPANSION: while (true) {
 			switch (tok.getType()) {
-				case EOF:
-					break EXPANSION;
-				case NL:
+				case EOF, NL:
 					break EXPANSION;
 
 				case CCOMMENT:
@@ -961,7 +956,7 @@ public class Preprocessor implements Closeable {
 						m.addToken(new Token(M_STRING,
 								la.getLine(), la.getColumn(),
 								"#" + la.getText(),
-								Integer.valueOf(idx)));
+								idx));
 					} else {
 						m.addToken(tok);
 						/* Allow for special processing. */
@@ -981,7 +976,7 @@ public class Preprocessor implements Closeable {
 						m.addToken(new Token(M_ARG,
 								tok.getLine(), tok.getColumn(),
 								tok.getText(),
-								Integer.valueOf(idx)));
+								idx));
 					break;
 
 				default:
@@ -996,7 +991,7 @@ public class Preprocessor implements Closeable {
 		}
 
 		if (getFeature(Feature.DEBUG))
-			LOG.debug("Defined macro " + m);
+			LOG.debug("Defined macro {}", m);
 		addMacro(m);
 
 		return tok; /* NL or EOF. */
@@ -1035,7 +1030,7 @@ public class Preprocessor implements Closeable {
 		if (!file.isFile())
 			return false;
 		if (getFeature(Feature.DEBUG))
-			LOG.debug("pp: including " + file);
+			LOG.debug("pp: including {}", file);
 		includes.add(file);
 		push_source(file.getSource(), true);
 		return true;
@@ -1066,10 +1061,7 @@ public class Preprocessor implements Closeable {
 		VirtualFile file = filesystem.getFile(name);
 		if (include(file))
 			return;
-		StringBuilder buf = new StringBuilder();
-		buf.append("File not found: ").append(name);
-		error(line, 0, buf.toString());
-		return;
+		error(line, 0, "File not found: " + name);
 	}
 
 	@NonNull
@@ -1112,14 +1104,12 @@ public class Preprocessor implements Closeable {
 			} else {
 				error(tok,
 						"Expected string or header, not " + tok.getText());
-				switch (tok.getType()) {
-					case NL:
-					case EOF:
-						return tok;
-					default:
+				return switch (tok.getType()) {
+					case NL, EOF -> tok;
+					default ->
 						/* Only if not a NL or EOF already. */
-						return source_skipline(false);
-				}
+							source_skipline(false);
+				};
 			}
 
 			/* Do the inclusion. */
@@ -1143,7 +1133,7 @@ public class Preprocessor implements Closeable {
 			Token mark = pop_source(true);
 			// FixedTokenSource should never generate a linemarker on exit.
 			if (mark != null)
-				push_source(new FixedTokenSource(Arrays.asList(mark)), true);
+				push_source(new FixedTokenSource(List.of(mark)), true);
 		}
 	}
 
@@ -1183,7 +1173,7 @@ public class Preprocessor implements Closeable {
 				case CCOMMENT:
 				case CPPCOMMENT:
 				case WHITESPACE:
-					continue NAME;
+					continue;
 				case IDENTIFIER:
 					name = tok;
 					break NAME;
@@ -1195,7 +1185,7 @@ public class Preprocessor implements Closeable {
 		}
 
 		Token tok;
-		List<Token> value = new ArrayList<Token>();
+		List<Token> value = new ArrayList<>();
 		VALUE: while (true) {
 			tok = source_token();
 			switch (tok.getType()) {
@@ -1214,10 +1204,7 @@ public class Preprocessor implements Closeable {
 				case CCOMMENT:
 				case CPPCOMMENT:
 					break;
-				case WHITESPACE:
-					value.add(tok);
-					break;
-				default:
+				default: // includes WHITESPACE
 					value.add(tok);
 					break;
 			}
@@ -1350,55 +1337,36 @@ public class Preprocessor implements Closeable {
 	}
 
 	private int expr_priority(@NonNull Token op) {
-		switch (op.getType()) {
-			case '/':
-				return 11;
-			case '%':
-				return 11;
-			case '*':
-				return 11;
-			case '+':
-				return 10;
-			case '-':
-				return 10;
-			case LSH:
-				return 9;
-			case RSH:
-				return 9;
-			case '<':
-				return 8;
-			case '>':
-				return 8;
-			case LE:
-				return 8;
-			case GE:
-				return 8;
-			case EQ:
-				return 7;
-			case NE:
-				return 7;
-			case '&':
-				return 6;
-			case '^':
-				return 5;
-			case '|':
-				return 4;
-			case LAND:
-				return 3;
-			case LOR:
-				return 2;
-			case '?':
-				return 1;
-			default:
+		return switch (op.getType()) {
+			case '/' -> 11;
+			case '%' -> 11;
+			case '*' -> 11;
+			case '+' -> 10;
+			case '-' -> 10;
+			case LSH -> 9;
+			case RSH -> 9;
+			case '<' -> 8;
+			case '>' -> 8;
+			case LE -> 8;
+			case GE -> 8;
+			case EQ -> 7;
+			case NE -> 7;
+			case '&' -> 6;
+			case '^' -> 5;
+			case '|' -> 4;
+			case LAND -> 3;
+			case LOR -> 2;
+			case '?' -> 1;
+			default ->
 				// System.out.println("Unrecognised operator " + op);
-				return 0;
-		}
+					0;
+		};
 	}
 
 	private int expr_char(Token token) {
 		Object value = token.getValue();
 		if (value instanceof Character)
-			return ((Character) value).charValue();
+			return (Character) value;
 		String text = String.valueOf(value);
 		if (text.isEmpty())
 			return 0;
@@ -1455,14 +1423,14 @@ public class Preprocessor implements Closeable {
 				return 0;
 		}
 
-		EXPR: while (true) {
+		while (true) {
 			// System.out.println("expr: lhs is " + lhs + ", pri = " + priority);
 			Token op = expr_token();
 			int pri = expr_priority(op); /* 0 if not a binop. */
 
 			if (pri == 0 || priority >= pri) {
 				expr_untoken(op);
-				break EXPR;
+				break;
 			}
 			rhs = expr(pri);
 			// System.out.println("rhs token is " + rhs);
@@ -1543,7 +1511,7 @@ public class Preprocessor implements Closeable {
 					long falseResult = expr(0);
 					lhs = (lhs != 0) ? rhs : falseResult;
 				}
-					break;
+				break;
 
 				default:
 					error(op,
@@ -1976,7 +1944,7 @@ public class Preprocessor implements Closeable {
 	public Token token() {
 		Token tok = _token();
 		if (getFeature(Feature.DEBUG))
-			LOG.debug("pp: Returning " + tok);
+			LOG.debug("pp: Returning {}", tok);
 		return tok;
 	}
 
@@ -2018,11 +1986,11 @@ public class Preprocessor implements Closeable {
 
 		Source s = getSource();
 		while (s != null) {
-			buf.append(" -> ").append(String.valueOf(s)).append("\n");
+			buf.append(" -> ").append(s).append("\n");
 			s = s.getParent();
 		}
 
-		Map<String, Macro> macros = new TreeMap<String, Macro>(getMacros());
+		Map<String, Macro> macros = new TreeMap<>(getMacros());
 		for (Macro macro : macros.values()) {
 			buf.append("#").append("macro ").append(macro).append("\n");
 		}

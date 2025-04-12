@@ -22,7 +22,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * A handler for preprocessor events, primarily errors and warnings.
- *
+ * <p>
  * If no PreprocessorListener is installed in a Preprocessor, all
  * error and warning events will throw an exception. Installing a
  * listener allows more intelligent handling of these events.
@@ -31,27 +31,25 @@ public interface PreprocessorListener {
 
 	/**
 	 * Handles a warning.
-	 *
+	 * <p>
 	 * The behaviour of this method is defined by the
 	 * implementation. It may simply record the error message, or
 	 * it may throw an exception.
 	 */
-	public void handleWarning(@NonNull Source source, int line, int column, @NonNull String msg);
+	void handleWarning(@NonNull Source source, int line, int column, @NonNull String msg);
 
 	/**
 	 * Handles an error.
-	 *
+	 * <p>
 	 * The behaviour of this method is defined by the
 	 * implementation. It may simply record the error message, or
 	 * it may throw an exception.
 	 */
-	public void handleError(@NonNull Source source, int line, int column, @NonNull String msg);
+	void handleError(@NonNull Source source, int line, int column, @NonNull String msg);
 
-	public enum SourceChangeEvent {
-
-		SUSPEND, PUSH, POP, RESUME;
+	enum SourceChangeEvent {
+		SUSPEND, PUSH, POP, RESUME
 	}
 
-	public void handleSourceChange(@NonNull Source source, @NonNull SourceChangeEvent event);
-
+	void handleSourceChange(@NonNull Source source, @NonNull SourceChangeEvent event);
 }

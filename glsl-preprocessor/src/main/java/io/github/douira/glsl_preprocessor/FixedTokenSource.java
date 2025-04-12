@@ -50,7 +50,7 @@ class FixedTokenSource extends Source {
 		buf.append("constant token stream ").append(tokens);
 		Source parent = getParent();
 		if (parent != null)
-			buf.append(" in ").append(String.valueOf(parent));
+			buf.append(" in ").append(parent);
 		return buf.toString();
 	}
 }

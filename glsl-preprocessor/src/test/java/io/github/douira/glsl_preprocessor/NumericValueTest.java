@@ -10,8 +10,7 @@ import org.junit.jupiter.api.Test;
  */
 public class NumericValueTest {
 	private Token testNumericValue(String in) {
-		StringLexerSource s = new StringLexerSource(in);
-		try {
+		try (StringLexerSource s = new StringLexerSource(in)) {
 			Token tok = s.token();
 			System.out.println("Token is " + tok);
 			assertEquals(Token.NUMBER, tok.getType());
@@ -19,8 +18,6 @@ public class NumericValueTest {
 			Token eof = s.token();
 			assertEquals(Token.EOF, eof.getType(), "Didn't get EOF, but " + tok);
 			return tok;
-		} finally {
-			s.close();
 		}
 	}
 
@@ -36,7 +33,7 @@ public class NumericValueTest {
 	}
 
 	@Test
-	public void testNumericValue() throws Exception {
+	public void testNumericValue() {
 
 		// Zero
 		testNumericValue("0", 0);
@@ -86,11 +83,6 @@ public class NumericValueTest {
 		testNumericValue("067e4", 067e4); // Fails
 
 		// Issues a warning.
-		try {
-			testNumericValue("097", 97);
-			fail("No warning.");
-		} catch (LexerException e) {
-		}
-
+		assertThrows(LexerException.class, () -> testNumericValue("097", 97));
 	}
 }

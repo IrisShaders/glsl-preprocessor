@@ -107,12 +107,6 @@ public class NumericValue extends Number {
 		return new BigDecimal(unscaled, scale);
 	}
 
-	// We could construct a heuristic for when an 'int' is large enough.
-	// private static final int S_MAXLEN_LONG =
-	// String.valueOf(Long.MAX_VALUE).length();
-	// private static final int S_MAXLEN_INT =
-	// String.valueOf(Integer.MAX_VALUE).length();
-
 	@NonNull
 	public Number toJavaLangNumber() {
 		int flags = getFlags();

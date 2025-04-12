@@ -13,7 +13,7 @@ import org.junit.jupiter.params.support.AnnotationConsumer;
 import au.com.origin.snapshots.annotations.SnapshotName;
 
 public class TestCaseProvider implements ArgumentsProvider, AnnotationConsumer<TestCaseSource> {
-	public static enum Spacing {
+	public enum Spacing {
 		TRIMMED_TRAILING_NEWLINE {
 			@Override
 			public String process(String input) {
@@ -36,8 +36,8 @@ public class TestCaseProvider implements ArgumentsProvider, AnnotationConsumer<T
 		public abstract String process(String input);
 	}
 
-	private static record TestCase(String testCaseSet, String scenario, String content, String output) {
-	};
+	private record TestCase(String testCaseSet, String scenario, String content, String output) {
+	}
 
 	private static final Map<Path, List<TestCase>> TEST_CASE_CACHE = new HashMap<>();
 

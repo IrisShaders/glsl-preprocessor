@@ -31,7 +31,7 @@ class JoinReader /* extends Reader */ implements Closeable {
 
 	private int newlines;
 	private boolean flushnl;
-	private int[] unget;
+	private final int[] unget;
 	private int uptr;
 
 	public JoinReader(Reader in, boolean trigraphs) {
@@ -177,7 +177,7 @@ class JoinReader /* extends Reader */ implements Closeable {
 		}
 	}
 
-	public int read(char cbuf[], int off, int len) {
+	public int read(char[] cbuf, int off, int len) {
 		for (int i = 0; i < len; i++) {
 			int ch = read();
 			if (ch == -1)

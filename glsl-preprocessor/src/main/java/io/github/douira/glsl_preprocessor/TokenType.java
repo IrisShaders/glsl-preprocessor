@@ -12,12 +12,11 @@ import java.util.*;
 import edu.umd.cs.findbugs.annotations.*;
 
 /**
- *
  * @author shevek
  */
-class TokenType {
+record TokenType(String name, String text) {
 
-	private static final List<TokenType> TYPES = new ArrayList<TokenType>();
+	private static final List<TokenType> TYPES = new ArrayList<>();
 
 	private static void addTokenType(int type, @NonNull String name, @CheckForNull String text) {
 		while (TYPES.size() <= type)
@@ -45,7 +44,7 @@ class TokenType {
 		TokenType tokenType = getTokenType(type);
 		if (tokenType == null)
 			return "Unknown" + type;
-		return tokenType.getName();
+		return tokenType.name();
 	}
 
 	@CheckForNull
@@ -53,7 +52,7 @@ class TokenType {
 		TokenType tokenType = getTokenType(type);
 		if (tokenType == null)
 			return null;
-		return tokenType.getText();
+		return tokenType.text();
 	}
 
 	static {
@@ -107,21 +106,20 @@ class TokenType {
 		addTokenType(INVALID, "INVALID");
 	}
 
-	private final String name;
-	private final String text;
-
 	TokenType(@NonNull String name, @CheckForNull String text) {
 		this.name = name;
 		this.text = text;
 	}
 
+	@Override
 	@NonNull
-	public String getName() {
+	public String name() {
 		return name;
 	}
 
+	@Override
 	@CheckForNull
-	public String getText() {
+	public String text() {
 		return text;
 	}
 }

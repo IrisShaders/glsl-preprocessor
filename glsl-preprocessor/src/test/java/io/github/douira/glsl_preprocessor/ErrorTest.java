@@ -16,7 +16,7 @@ public class ErrorTest {
 		return false;
 	}
 
-	private void testError(String input) throws Exception {
+	private void testError(String input) {
 		StringLexerSource sl;
 		DefaultPreprocessorListener pl;
 		Preprocessor p;

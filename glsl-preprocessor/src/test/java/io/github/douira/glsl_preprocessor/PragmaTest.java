@@ -30,7 +30,7 @@ public class PragmaTest {
 		pp.setListener(new DefaultPreprocessorListener());
 		String output = pp.printToString();
 		pp.close();
-		LOG.info("Output: " + output);
+		LOG.info("Output: {}", output);
 		// assertTrue(output.contains("absolute-result"));
 	}
 }

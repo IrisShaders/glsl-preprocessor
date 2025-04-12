@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.*;
 
 /**
- * https://github.com/shevek/jcpp/issues/25
+ * <a href="https://github.com/shevek/jcpp/issues/25">...</a>
  *
  * @author shevek
  */
@@ -17,16 +17,18 @@ public class TokenPastingWhitespaceTest {
 	public void testWhitespacePasting() {
 		Preprocessor pp = new Preprocessor();
 		pp.addInput(new StringLexerSource(
-				"#define ONE(arg) one_##arg\n"
-						+ "#define TWO(arg) ONE(two_##arg)\n"
-						+ "\n"
-						+ "TWO(good)\n"
-						+ "TWO(     /* evil newline */\n"
-						+ "    bad)\n"
-						+ "\n"
-						+ "ONE(good)\n"
-						+ "ONE(     /* evil newline */\n"
-						+ "    bad)\n",
+				"""
+						#define ONE(arg) one_##arg
+						#define TWO(arg) ONE(two_##arg)
+						
+						TWO(good)
+						TWO(     /* evil newline */
+						    bad)
+						
+						ONE(good)
+						ONE(     /* evil newline */
+						    bad)
+						""",
 				true));
 		String output;
 		try {
@@ -36,11 +38,12 @@ public class TokenPastingWhitespaceTest {
 		} finally {
 			pp.close();
 		}
-		LOG.info("Output is:\n" + output);
-		assertEquals("one_two_good\n"
-				+ "one_two_bad\n"
-				+ "\n"
-				+ "one_good\n"
-				+ "one_bad", output);
+		LOG.info("Output is:\n{}", output);
+		assertEquals("""
+				one_two_good
+				one_two_bad
+				
+				one_good
+				one_bad""", output);
 	}
 }

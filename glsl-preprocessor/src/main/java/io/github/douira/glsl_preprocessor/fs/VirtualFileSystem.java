@@ -24,13 +24,13 @@ import edu.umd.cs.findbugs.annotations.NonNull;
  * An extremely lightweight virtual file system interface.
  */
 public interface VirtualFileSystem {
-	public static final MemoryFileSystem EMPTY = new MemoryFileSystem();
+	MemoryFileSystem EMPTY = new MemoryFileSystem();
 
 	@NonNull
-	public VirtualFile getFile(@NonNull String path);
+	VirtualFile getFile(@NonNull String path);
 
 	@NonNull
-	public default VirtualFile getFile(@NonNull String dir, @NonNull String name) {
+	default VirtualFile getFile(@NonNull String dir, @NonNull String name) {
 		return getFile(dir + '/' + name);
 	}
 }

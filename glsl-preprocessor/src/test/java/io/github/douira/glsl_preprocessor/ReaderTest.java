@@ -10,17 +10,14 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import io.github.douira.glsl_preprocessor.test_util.ResourceFileSystem;
 
 public class ReaderTest {
-	public static String testCppReader(@NonNull String in, Feature... f)
-			throws Exception {
+	public static String testCppReader(@NonNull String in, Feature... f) {
 		System.out.println("Testing " + in);
 		StringReader r = new StringReader(in);
 		Preprocessor pp = new Preprocessor(r);
-		pp.setFileSystem(new ResourceFileSystem());
-		pp.addFeatures(f);
-		try {
+		try (pp) {
+			pp.setFileSystem(new ResourceFileSystem());
+			pp.addFeatures(f);
 			return pp.printToString();
-		} finally {
-			pp.close();
 		}
 	}
 

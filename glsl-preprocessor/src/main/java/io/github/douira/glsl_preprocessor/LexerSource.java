@@ -21,6 +21,7 @@ package io.github.douira.glsl_preprocessor;
 import static io.github.douira.glsl_preprocessor.Token.*;
 
 import java.io.*;
+import java.util.Arrays;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 
@@ -150,18 +151,10 @@ public class LexerSource extends Source {
 
 	/* XXX Move to JoinReader and canonicalise newlines. */
 	private static boolean isLineSeparator(int c) {
-		switch ((char) c) {
-			case '\r':
-			case '\n':
-			case '\u2028':
-			case '\u2029':
-			case '\u000B':
-			case '\u000C':
-			case '\u0085':
-				return true;
-			default:
-				return (c == -1);
-		}
+		return switch ((char) c) {
+			case '\r', '\n', '\u2028', '\u2029', '\u000B', '\u000C', '\u0085' -> true;
+			default -> (c == -1);
+		};
 	}
 
 	private int read() {
@@ -298,8 +291,6 @@ public class LexerSource extends Source {
 	 *
 	 * @param text The buffer to which the literal escape sequence is appended.
 	 * @return The new parsed character value.
-	 * @throws IOException    if it goes badly wrong.
-	 * @throws LexerException if it goes wrong.
 	 */
 	private int escape(StringBuilder text) {
 		int d = read();
@@ -410,23 +401,21 @@ public class LexerSource extends Source {
 			}
 		}
 		text.append(close);
-		switch (close) {
-			case '"':
-				return new Token(STRING,
-						text.toString(), buf.toString());
-			case '>':
-				return new Token(HEADER,
-						text.toString(), buf.toString());
-			case '\'':
+		return switch (close) {
+			case '"' -> new Token(STRING,
+					text.toString(), buf.toString());
+			case '>' -> new Token(HEADER,
+					text.toString(), buf.toString());
+			case '\'' -> {
 				if (buf.length() == 1)
-					return new Token(CHARACTER,
+					yield new Token(CHARACTER,
 							text.toString(), buf.toString());
-				return new Token(SQSTRING,
+				yield new Token(SQSTRING,
 						text.toString(), buf.toString());
-			default:
-				throw new IllegalStateException(
-						"Unknown closing character " + String.valueOf(close));
-		}
+			}
+			default -> throw new IllegalStateException(
+					"Unknown closing character " + close);
+		};
 	}
 
 	@NonNull
@@ -508,7 +497,7 @@ public class LexerSource extends Source {
 		return part.toString();
 	}
 
-	/* We do not know whether know the first digit is valid. */
+	/* We do not know whether the first digit is valid. */
 	@NonNull
 	private Token number_hex(char x) {
 		StringBuilder text = new StringBuilder("0");
@@ -705,8 +694,7 @@ public class LexerSource extends Source {
 						} while (d == '\n');
 						unread(d);
 						char[] text = new char[nls];
-						for (int i = 0; i < text.length; i++)
-							text[i] = '\n';
+						Arrays.fill(text, '\n');
 						// Skip the bol = false below.
 						tok = new Token(NL, _l, _c, new String(text));
 					}

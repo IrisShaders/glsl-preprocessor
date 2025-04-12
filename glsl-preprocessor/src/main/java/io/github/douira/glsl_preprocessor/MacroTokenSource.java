@@ -132,7 +132,7 @@ class MacroTokenSource extends Source {
 		// solution,
 		// as it avoids duplicating all the logic around hasNext() in case COMMA.
 		boolean comma = false;
-		TOKEN: for (int i = 0; i < count; i++) {
+		for (int i = 0; i < count; i++) {
 			if (!tokens.hasNext()) {
 				/* XXX This one really should throw. */
 				error(ptok.getLine(), ptok.getColumn(),
@@ -152,7 +152,7 @@ class MacroTokenSource extends Source {
 					ptok = tok;
 					break;
 				case M_ARG:
-					int idx = ((Integer) tok.getValue()).intValue();
+					int idx = (Integer) tok.getValue();
 					Argument arg = args.get(idx);
 					if (comma && isVariadicArgument(idx) && arg.isEmpty()) {
 						// Ugly way to strip the comma.
@@ -170,7 +170,7 @@ class MacroTokenSource extends Source {
 				case ',':
 					comma = true;
 					buf.append(tok.getText());
-					continue TOKEN;
+					continue;
 				default:
 					buf.append(tok.getText());
 					break;
@@ -213,11 +213,11 @@ class MacroTokenSource extends Source {
 			switch (tok.getType()) {
 				case M_STRING:
 					/* Use the nonexpanded arg. */
-					idx = ((Integer) tok.getValue()).intValue();
+					idx = (Integer) tok.getValue();
 					return stringify(tok, args.get(idx));
 				case M_ARG:
 					/* Expand the arg. */
-					idx = ((Integer) tok.getValue()).intValue();
+					idx = (Integer) tok.getValue();
 					// System.out.println("Pushing arg " + args.get(idx));
 					arg = args.get(idx).expansion();
 					break;
@@ -237,7 +237,7 @@ class MacroTokenSource extends Source {
 		buf.append("expansion of ").append(macro.getName());
 		Source parent = getParent();
 		if (parent != null)
-			buf.append(" in ").append(String.valueOf(parent));
+			buf.append(" in ").append(parent);
 		return buf.toString();
 	}
 }

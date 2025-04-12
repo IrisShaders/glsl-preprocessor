@@ -27,23 +27,17 @@ public class PreprocessorTest {
 						true));
 	}
 
-	private static class I {
-
-		private final String t;
-
-		public I(String t) {
-			this.t = t;
-		}
+	private record I(String t) {
 
 		public String getText() {
-			return t;
+				return t;
+			}
+	
+			@Override
+			public String toString() {
+				return getText();
+			}
 		}
-
-		@Override
-		public String toString() {
-			return getText();
-		}
-	}
 
 	private static I I(String t) {
 		return new I(t);
@@ -171,7 +165,7 @@ public class PreprocessorTest {
 		Token t;
 		do {
 			t = p.token();
-			LOG.warn("Remaining token " + t);
+			LOG.warn("Remaining token {}", t);
 		} while (t.getType() != EOF);
 	}
 
@@ -184,7 +178,7 @@ public class PreprocessorTest {
 		Token t;
 		do {
 			t = p.token();
-			LOG.warn("Remaining token " + t);
+			LOG.warn("Remaining token {}", t);
 		} while (t.getType() != EOF);
 	}
 
@@ -196,7 +190,7 @@ public class PreprocessorTest {
 
 	private void testInput(String in, Object... out)
 			throws Exception {
-		LOG.info("Input: " + in);
+		LOG.info("Input: {}", in);
 		writer.write(in);
 		writer.flush();
 		for (Object v : out) {
@@ -211,7 +205,7 @@ public class PreprocessorTest {
 					fail("Expected IDENTIFIER " + v + ", but got " + t);
 				assertEquals(((I) v).getText(), t.getText());
 			} else if (v instanceof Character) {
-				assertType(((Character) v).charValue(), t);
+				assertType((Character) v, t);
 			} else if (v instanceof Integer) {
 				assertType(((Number) v).intValue(), t);
 			} else {
