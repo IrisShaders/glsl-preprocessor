@@ -1,32 +1,29 @@
 package io.github.douira.glsl_preprocessor;
 
-import static io.github.douira.glsl_preprocessor.PreprocessorTest.*;
-import static io.github.douira.glsl_preprocessor.Token.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.Arrays;
-
 import org.junit.jupiter.api.Test;
-import org.slf4j.*;
+
+import static io.github.douira.glsl_preprocessor.PreprocessorTest.assertType;
+import static io.github.douira.glsl_preprocessor.Token.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LexerSourceTest {
-	private static final Logger LOG = LoggerFactory.getLogger(LexerSourceTest.class);
+//	private static final Logger LOG = LoggerFactory.getLogger(LexerSourceTest.class);
 
 	public static void testLexerSource(String in, boolean textmatch, int... out) {
-		LOG.info("Testing '{}' => {}", in, Arrays.toString(out));
+//		LOG.info("Testing '{}' => {}", in, Arrays.toString(out));
 		StringLexerSource s = new StringLexerSource(in);
 
 		StringBuilder buf = new StringBuilder();
 		for (int j : out) {
 			Token tok = s.token();
-			LOG.info("Token is {}", tok);
+//			LOG.info("Token is {}", tok);
 			assertType(j, tok);
 			// assertEquals(col, tok.getColumn());
 			buf.append(tok.getText());
 		}
 
 		Token tok = s.token();
-		LOG.info("Token is {}", tok);
+//		LOG.info("Token is {}", tok);
 		assertType(EOF, tok);
 
 		if (textmatch) {

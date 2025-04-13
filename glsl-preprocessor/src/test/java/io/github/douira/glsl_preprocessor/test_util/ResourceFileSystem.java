@@ -17,7 +17,6 @@ import io.github.douira.glsl_preprocessor.fs.*;
  * @author shevek
  */
 public class ResourceFileSystem implements VirtualFileSystem {
-
 	private final ClassLoader loader;
 	private final Charset charset;
 
@@ -34,16 +33,12 @@ public class ResourceFileSystem implements VirtualFileSystem {
 		this(ClassLoader.getSystemClassLoader());
 	}
 
+	@NonNull
 	@Override
-	public VirtualFile getFile(String path) {
+	public VirtualFile getFile(@NonNull String path) {
 		return new ResourceFile(loader, path);
 	}
-
-	@Override
-	public VirtualFile getFile(String dir, String name) {
-		return getFile(dir + "/" + name);
-	}
-
+	
 	private class ResourceFile implements VirtualFile {
 
 		private final ClassLoader loader;
@@ -59,6 +54,7 @@ public class ResourceFileSystem implements VirtualFileSystem {
 			return loader.getResource(path) != null;
 		}
 
+		@NonNull
 		@Override
 		public Source getSource() {
 			InputStream stream = loader.getResourceAsStream(path);

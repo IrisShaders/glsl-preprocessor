@@ -18,7 +18,9 @@
  */
 package io.github.douira.glsl_preprocessor.fs;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import io.github.douira.glsl_preprocessor.Source;
 
 /**
  * An extremely lightweight virtual file system interface.
@@ -28,9 +30,9 @@ public interface VirtualFileSystem {
 
 	@NonNull
 	VirtualFile getFile(@NonNull String path);
-
+	
 	@NonNull
-	default VirtualFile getFile(@NonNull String dir, @NonNull String name) {
-		return getFile(dir + '/' + name);
+	default VirtualFile getFile(@CheckForNull Source parent, @NonNull String path, boolean quoted, boolean next) {
+		return getFile(path);
 	}
 }

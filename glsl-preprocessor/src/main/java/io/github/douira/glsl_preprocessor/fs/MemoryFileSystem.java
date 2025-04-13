@@ -1,5 +1,7 @@
 package io.github.douira.glsl_preprocessor.fs;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 import java.io.IOException;
 import java.util.*;
 
@@ -18,11 +20,12 @@ public class MemoryFileSystem implements VirtualFileSystem {
 	}
 
 	public void addFile(String path, String content) {
-		addFile(path, new StringFile(content));
+		addFile(path, new StringFile(path, content));
 	}
 
+	@NonNull
 	@Override
-	public VirtualFile getFile(String path) {
+	public VirtualFile getFile(@NonNull String path) {
 		if (!files.containsKey(path)) {
 			throw new RuntimeException(new IOException("File not found: " + path));
 		}

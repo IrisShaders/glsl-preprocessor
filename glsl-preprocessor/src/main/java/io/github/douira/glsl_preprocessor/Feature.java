@@ -28,31 +28,39 @@ public enum Feature {
 	/** Supports ANSI trigraphs. */
 	TRIGRAPHS,
 
-	/** Outputs linemarker tokens. */
-	LINEMARKERS,
+	/** Outputs line marker tokens. */
+	LINE_MARKERS,
+
+	/** Outputs line marker tokens by file name. */
+	NAMED_LINE_MARKERS,
+
+	/**
+	 * Adds flags to the line markers that distinguish what role they have.
+	 */
+	LINE_MARKER_FLAGS,
 
 	/** Reports tokens of type INVALID as errors. */
-	CSYNTAX,
+	C_SYNTAX,
 
 	/** Preserves comments in the lexed output. Like cpp -C */
-	KEEPCOMMENTS,
+	KEEP_COMMENTS,
 
 	/** Preserves comments in the lexed output, even when inactive. */
-	KEEPALLCOMMENTS,
+	KEEP_ALL_COMMENTS,
 
 	/** enable debug messages */
 	DEBUG,
 
-	INCLUDENEXT,
+	INCLUDE_NEXT,
 
-	/** ?? */
+	/** enables marking the source a #pragma once appears in to only be included once */
 	PRAGMA_ONCE,
 
 	/** GLSL support */
 	GLSL_PASSTHROUGH,
 	GLSL_CUSTOM_PASSTHROUGH,
-	/** arbitrary pragmas */
+	/** arbitrary pragmas, which are not passed through though, but won't cause errors if this is enabled */
 	ARBITRARY_PRAGMAS,
-	/** #custom directive */
+	/** #custom directive, which is passed through */
 	CUSTOM_DIRECTIVE,
 }

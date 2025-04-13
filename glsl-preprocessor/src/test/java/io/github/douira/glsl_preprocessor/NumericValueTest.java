@@ -12,7 +12,7 @@ public class NumericValueTest {
 	private Token testNumericValue(String in) {
 		try (StringLexerSource s = new StringLexerSource(in)) {
 			Token tok = s.token();
-			System.out.println("Token is " + tok);
+//			System.out.println("Token is " + tok);
 			assertEquals(Token.NUMBER, tok.getType());
 
 			Token eof = s.token();
@@ -22,7 +22,7 @@ public class NumericValueTest {
 	}
 
 	private void testNumericValue(String in, double out) {
-		System.out.println("Testing '" + in + "' -> " + out);
+//		System.out.println("Testing '" + in + "' -> " + out);
 		Token tok = testNumericValue(in);
 		assertEquals(in, tok.getText());
 		NumericValue value = (NumericValue) tok.getValue();

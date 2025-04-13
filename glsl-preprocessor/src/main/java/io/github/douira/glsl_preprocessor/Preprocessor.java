@@ -18,17 +18,21 @@
  */
 package io.github.douira.glsl_preprocessor;
 
-import static io.github.douira.glsl_preprocessor.PreprocessorCommand.*;
-import static io.github.douira.glsl_preprocessor.Token.*;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import io.github.douira.glsl_preprocessor.PreprocessorListener.SourceChangeEvent;
+import io.github.douira.glsl_preprocessor.fs.VirtualFile;
+import io.github.douira.glsl_preprocessor.fs.VirtualFileSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.Closeable;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.*;
 
-import org.slf4j.*;
-
-import edu.umd.cs.findbugs.annotations.*;
-import io.github.douira.glsl_preprocessor.PreprocessorListener.SourceChangeEvent;
-import io.github.douira.glsl_preprocessor.fs.*;
+import static io.github.douira.glsl_preprocessor.PreprocessorCommand.PP_ERROR;
+import static io.github.douira.glsl_preprocessor.Token.*;
 
 /**
  * A C Preprocessor.
@@ -40,9 +44,9 @@ import io.github.douira.glsl_preprocessor.fs.*;
 /*
  * Source file name and line number information is conveyed by lines of the form
  *
- * # linenum filename flags
+ * #line linenum "filename" flags
  *
- * These are called linemarkers. They are inserted as needed into
+ * These are called line markers. They are inserted as needed into
  * the output (but never within a string or character constant). They
  * mean that the following line originated in file filename at line
  * linenum. filename will never contain any non-printing characters;
@@ -57,15 +61,11 @@ import io.github.douira.glsl_preprocessor.fs.*;
  * `2'
  * This indicates returning to a file (after having included another
  * file).
- * `3'
- * This indicates that the following text comes from a system header
- * file, so certain warnings should be suppressed.
- * `4'
- * This indicates that the following text should be treated as being
- * wrapped in an implicit extern "C" block.
  */
 public class Preprocessor implements Closeable {
-
+	public static final int LINE_MARKER_FLAG_NEW_FILE = 1;
+	public static final int LINE_MARKER_FLAG_RETURNING = 2;
+	
 	private static final Logger LOG = LoggerFactory.getLogger(Preprocessor.class);
 
 	private static final Source INTERNAL = new Source() {
@@ -97,12 +97,15 @@ public class Preprocessor implements Closeable {
 
 	/* Miscellaneous support. */
 	private int counter = 0;
-	private final Set<String> onceseenpaths = new HashSet<>();
+	private final Set<String> onceSeenPaths = new HashSet<>();
 	private final List<VirtualFile> includes = new ArrayList<>();
+
+	private final Map<String, Integer> sourceNumbers = new HashMap<>();
+	private int sourceNumber = 0;
 
 	private final Set<Feature> features = EnumSet.noneOf(Feature.class);
 	private final Set<Warning> warnings = EnumSet.noneOf(Warning.class);
-	private VirtualFileSystem filesystem = VirtualFileSystem.EMPTY;
+	private VirtualFileSystem fileSystem = VirtualFileSystem.EMPTY;
 	private PreprocessorListener listener = null;
 
 	{
@@ -131,7 +134,7 @@ public class Preprocessor implements Closeable {
 	 * Sets the VirtualFileSystem used by this Preprocessor.
 	 */
 	public void setFileSystem(@NonNull VirtualFileSystem filesystem) {
-		this.filesystem = filesystem;
+		this.fileSystem = filesystem;
 	}
 
 	/**
@@ -139,7 +142,7 @@ public class Preprocessor implements Closeable {
 	 */
 	@NonNull
 	public VirtualFileSystem getFileSystem() {
-		return filesystem;
+		return fileSystem;
 	}
 
 	/**
@@ -247,6 +250,10 @@ public class Preprocessor implements Closeable {
 	public void addInput(@NonNull Source source) {
 		source.init(this);
 		inputs.add(source);
+	}
+	
+	public void addInput(@NonNull String input) {
+		this.addInput(new LexerSource(new StringReader(input), true));
 	}
 
 	/**
@@ -447,10 +454,10 @@ public class Preprocessor implements Closeable {
 	 * @see #getSource()
 	 * @see #push_source(Source,boolean)
 	 *
-	 * @param linemarker TODO: currently ignored, might be a bug?
+	 * @param createLineMarker whether a line marker token should be created
 	 */
 	@CheckForNull
-	protected Token pop_source(boolean linemarker) {
+	protected Token pop_source(boolean createLineMarker) {
 		if (listener != null)
 			listener.handleSourceChange(this.source, SourceChangeEvent.POP);
 		Source s = this.source;
@@ -461,15 +468,13 @@ public class Preprocessor implements Closeable {
 			listener.handleSourceChange(this.source, SourceChangeEvent.RESUME);
 
 		Source t = getSource();
-		if (getFeature(Feature.LINEMARKERS)
-				&& s.isNumbered()
-				&& t != null) {
+		if (createLineMarker && getFeature(Feature.LINE_MARKERS) && s.isNumbered() && t != null) {
 			/*
 			 * We actually want 'did the nested source
 			 * contain a newline token', which isNumbered()
 			 * approximates. This is not perfect, but works.
 			 */
-			return line_token(t.getLine(), t.getName(), " 2");
+			return line_token(t.getLine(), t.getName(), LINE_MARKER_FLAG_RETURNING);
 		}
 
 		return null;
@@ -485,28 +490,48 @@ public class Preprocessor implements Closeable {
 			return new Token(EOF);
 		Source s = inputs.remove(0);
 		push_source(s, true);
-		return line_token(s.getLine(), s.getName(), " 1");
+		return line_token(s.getLine(), s.getName(), LINE_MARKER_FLAG_NEW_FILE);
 	}
 
 	/* Source tokens */
 	private Token source_token;
-
+	
 	/*
 	 * XXX Make this include the NL, and make all cpp directives eat
 	 * their own NL.
 	 */
 	@NonNull
-	private Token line_token(int line, @CheckForNull String name, @NonNull String extra) {
+	private Token line_token(int line, @CheckForNull String sourceName, int flags) {
 		StringBuilder buf = new StringBuilder();
-		buf.append("#line ").append(line)
-				.append(" \"");
-		/* XXX This call to escape(name) is correct but ugly. */
-		if (name == null)
-			buf.append("<no file>");
-		else
-			MacroTokenSource.escape(buf, name);
-		buf.append("\"").append(extra).append("\n");
+		buf.append("#line ").append(line);
+
+		if (getFeature(Feature.NAMED_LINE_MARKERS)) {
+			buf.append(" \"");
+			/* XXX This call to escape(sourceName) is correct but ugly. */
+			if (sourceName == null) {
+				buf.append("<no file>");
+			} else {
+				MacroTokenSource.escape(buf, sourceName);
+			}
+
+			buf.append("\"");
+		} else {
+			buf.append(" ").append(sourceNumbers.computeIfAbsent(sourceName, n -> sourceNumber++));
+		}
+		if (getFeature(Feature.LINE_MARKER_FLAGS) && flags != 0) {
+			for (int i = 0; i < 4; i++) {
+				if ((flags & (1 << i)) != 0) {
+					buf.append(" ").append(i + 1);
+				}
+			}
+		}
+
+		buf.append("\n");
 		return new Token(P_LINE, line, 0, buf.toString(), null);
+	}
+
+	public Map<String, Integer> getSourceNumbers() {
+		return sourceNumbers;
 	}
 
 	@NonNull
@@ -514,8 +539,9 @@ public class Preprocessor implements Closeable {
 		if (source_token != null) {
 			Token tok = source_token;
 			source_token = null;
-			if (getFeature(Feature.DEBUG))
+			if (getFeature(Feature.DEBUG)) {
 				LOG.debug("Returning unget token {}", tok);
+			}
 			return tok;
 		}
 
@@ -523,8 +549,9 @@ public class Preprocessor implements Closeable {
 			Source s = getSource();
 			if (s == null) {
 				Token t = next_source();
-				if (t.getType() == P_LINE && !getFeature(Feature.LINEMARKERS))
+				if (t.getType() == P_LINE && !getFeature(Feature.LINE_MARKERS)) {
 					continue;
+				}
 				return t;
 			}
 			Token tok = s.token();
@@ -532,12 +559,14 @@ public class Preprocessor implements Closeable {
 			if (tok.getType() == EOF && s.isAutopop()) {
 				// System.out.println("Autopop " + s);
 				Token mark = pop_source(true);
-				if (mark != null)
+				if (mark != null) {
 					return mark;
+				}
 				continue;
 			}
-			if (getFeature(Feature.DEBUG))
+			if (getFeature(Feature.DEBUG)) {
 				LOG.debug("Returning fresh token {}", tok);
+			}
 			return tok;
 		}
 	}
@@ -1026,7 +1055,6 @@ public class Preprocessor implements Closeable {
 	 * @return true if the file was successfully included, false otherwise.
 	 */
 	protected boolean include(@NonNull VirtualFile file) {
-		// System.out.println("Try to include " + ((File)file).getAbsolutePath());
 		if (!file.isFile())
 			return false;
 		if (getFeature(Feature.DEBUG))
@@ -1037,30 +1065,13 @@ public class Preprocessor implements Closeable {
 	}
 
 	/**
-	 * Attempts to include a file from an include path, by name.
-	 *
-	 * @param path The list of virtual directories to search for the given name.
-	 * @param name The name of the file to attempt to include.
-	 * @return true if the file was successfully included, false otherwise.
-	 */
-	protected boolean include(@NonNull Iterable<String> path, @NonNull String name) {
-		for (String dir : path) {
-			VirtualFile file = getFileSystem().getFile(dir, name);
-			if (include(file))
-				return true;
-		}
-		return false;
-	}
-
-	/**
 	 * Handles an include directive.
 	 */
-	private void include(
-			@CheckForNull String parent, int line,
-			@NonNull String name, boolean quoted, boolean next) {
-		VirtualFile file = filesystem.getFile(name);
-		if (include(file))
+	private void include(@CheckForNull Source parent, int line, @NonNull String name, boolean quoted, boolean next) {
+		VirtualFile file = fileSystem.getFile(parent, name, quoted, next);
+		if (include(file)) {
 			return;
+		}
 		error(line, 0, "File not found: " + name);
 	}
 
@@ -1113,14 +1124,15 @@ public class Preprocessor implements Closeable {
 			}
 
 			/* Do the inclusion. */
-			include(source.getPath(), tok.getLine(), name, quoted, next);
+			include(source, tok.getLine(), name, quoted, next);
 
 			/*
 			 * 'tok' is the 'nl' after the include. We use it after the
 			 * #line directive.
 			 */
-			if (getFeature(Feature.LINEMARKERS))
-				return line_token(1, source.getName(), " 1");
+			if (getFeature(Feature.LINE_MARKERS)) {
+				return line_token(1, source.getName(), LINE_MARKER_FLAG_NEW_FILE);
+			}
 			return tok;
 		} finally {
 			lexer.setInclude(false);
@@ -1129,11 +1141,12 @@ public class Preprocessor implements Closeable {
 
 	protected void pragma_once(@NonNull Token name) {
 		Source s = this.source;
-		if (!onceseenpaths.add(s.getPath())) {
+		if (!onceSeenPaths.add(s.getPath())) {
 			Token mark = pop_source(true);
-			// FixedTokenSource should never generate a linemarker on exit.
-			if (mark != null)
+			// FixedTokenSource should never generate a line marker on exit.
+			if (mark != null) {
 				push_source(new FixedTokenSource(List.of(mark)), true);
+			}
 		}
 	}
 
@@ -1575,7 +1588,7 @@ public class Preprocessor implements Closeable {
 				Source s = getSource();
 				if (s == null) {
 					Token t = next_source();
-					if (t.getType() == P_LINE && !getFeature(Feature.LINEMARKERS))
+					if (t.getType() == P_LINE && !getFeature(Feature.LINE_MARKERS))
 						continue;
 					return t;
 				}
@@ -1599,11 +1612,11 @@ public class Preprocessor implements Closeable {
 					case CCOMMENT:
 					case CPPCOMMENT:
 						// Patch up to preserve whitespace.
-						if (getFeature(Feature.KEEPALLCOMMENTS))
+						if (getFeature(Feature.KEEP_ALL_COMMENTS))
 							return tok;
 						if (!isActive())
 							return toWhitespace(tok);
-						if (getFeature(Feature.KEEPCOMMENTS))
+						if (getFeature(Feature.KEEP_COMMENTS))
 							return tok;
 						return toWhitespace(tok);
 					default:
@@ -1703,12 +1716,12 @@ public class Preprocessor implements Closeable {
 					return tok;
 
 				case P_LINE:
-					if (getFeature(Feature.LINEMARKERS))
+					if (getFeature(Feature.LINE_MARKERS))
 						return tok;
 					break;
 
 				case INVALID:
-					if (getFeature(Feature.CSYNTAX))
+					if (getFeature(Feature.C_SYNTAX))
 						error(tok, String.valueOf(tok.getValue()));
 					return tok;
 
@@ -1766,7 +1779,7 @@ public class Preprocessor implements Closeable {
 							if (!isActive()) {
 								return source_skipline(false);
 							}
-							if (!getFeature(Feature.INCLUDENEXT)) {
+							if (!getFeature(Feature.INCLUDE_NEXT)) {
 								error(tok,
 										"Directive include_next not enabled");
 								return source_skipline(false);
@@ -1959,7 +1972,7 @@ public class Preprocessor implements Closeable {
 					return;
 				case CCOMMENT:
 				case CPPCOMMENT:
-					if (!getFeature(Feature.KEEPCOMMENTS)) {
+					if (!getFeature(Feature.KEEP_COMMENTS)) {
 						builder.append(' ');
 						break;
 					}

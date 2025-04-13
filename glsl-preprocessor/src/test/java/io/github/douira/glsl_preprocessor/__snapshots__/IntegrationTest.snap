@@ -1,13 +1,85 @@
+testIncludeLineMappingExplicitFiles[GLSL_PASSTHROUGH,LINE_MARKERS,NAMED_LINE_MARKERS_Y/Ave1XPFEAn5nYsR2tYDIZlvJU]=[
+#include "a"
+#version 330 core
+foo
+#include "b"
+#extension GL_ARB_texture_rectangle : enable
+#include "b"
+
+<><><><><><><><><><><><><><><><><><><><><><><><><>
+(no error)
+]
+
+
+testIncludeLineMappingExplicitFiles[LINE_MARKERS,NAMED_LINE_MARKERS_2x93/pYHABoACwhPVaFOcpcwPI0]=[
+bar
+#include "a"
+foo
+
+<><><><><><><><><><><><><><><><><><><><><><><><><>
+(no error)
+]
+
+
+testIncludeLineMappingExplicitFiles[LINE_MARKERS,NAMED_LINE_MARKERS_khv4ydPR8xYuU40++utyw/fXhrE]=[
+#include "a"
+<><><><><><><><><><><><><><><><><><><><><><><><><>
+(no error)
+]
+
+
+testIncludeLineMappingExplicitFiles[PRAGMA_ONCE,LINE_MARKERS,NAMED_LINE_MARKERS_sIEPPAQhrxBRiCEerd7tv3qOzuc]=[
+bar
+#include "a"
+second
+#include "a"
+foo
+
+<><><><><><><><><><><><><><><><><><><><><><><><><>
+(no error)
+]
+
+
+testIncludeLineMapping[LINE_MARKERS,NAMED_LINE_MARKERS_dSPMsT7XryDyTsdqDoJrH6BH3Zo]=[
+bar
+#include "length!2:a"
+foo
+
+<><><><><><><><><><><><><><><><><><><><><><><><><>
+(no error)
+]
+
+
+testIncludeLineMapping[LINE_MARKERS,NAMED_LINE_MARKERS_ylY/w6VK6e4/mk6/CiSkpxnOBXs]=[
+bar
+#include "length!2:a"
+#include "length!2:b"
+baz
+#include "length!3:c"
+foo
+
+<><><><><><><><><><><><><><><><><><><><><><><><><>
+(no error)
+]
+
+
+testIncludeLineMapping[LINE_MARKERS_dSPMsT7XryDyTsdqDoJrH6BH3Zo]=[
+bar
+#include "length!2:a"
+foo
+
+<><><><><><><><><><><><><><><><><><><><><><><><><>
+(no error)
+]
+
+
 testPreprocessor[GLSL_PASSTHROUGH,GLSL_CUSTOM_PASSTHROUGH,ARBITRARY_PRAGMAS_uO+aZa+FgyCVAejH6nxTkTt0CWQ]=[
 #custom fdsaflsj 43lk j43kljgkld "fds" +,--,fds
 #version 330 core
 #pragma foo bar fdafds a
 
 <><><><><><><><><><><><><><><><><><><><><><><><><>
-#custom fdsaflsj 43lk j43kljgkld "fds" +,--,fds
-#version 330 core
-.
-.
+(no error)
 ]
 
 
@@ -17,10 +89,7 @@ testPreprocessor[GLSL_PASSTHROUGH,GLSL_CUSTOM_PASSTHROUGH_WD5wCCQXiHxE57nVQkXoyc
 #custom
 
 <><><><><><><><><><><><><><><><><><><><><><><><><>
-#version
-#extension
-#custom
-
+(no error)
 ]
 
 
@@ -32,12 +101,7 @@ foo bar
 int a = DEFINED;
 
 <><><><><><><><><><><><><><><><><><><><><><><><><>
-#version 330 core
-foo bar
-#extension foo : bar
-
-int a = 4;
-
+(no error)
 ]
 
 
@@ -58,21 +122,7 @@ FOO is defined here
 #endif
 
 <><><><><><><><><><><><><><><><><><><><><><><><><>
-
-#version 330 core
-int a = 4;
-.
-.
-foo bar 
-.
-.
-.
-.
-foo bar
-
-5 is defined here
-.
-.
+(no error)
 ]
 
 
@@ -92,20 +142,14 @@ if (a == BAR) {
 }
 
 <><><><><><><><><><><><><><><><><><><><><><><><><>
-#extension GL_ARB_texture_rectangle : enable
-#extension GL_ARB_texture_rectangle : enable
-#version 330 fjdsal fjsda fisda jfiojfdsaflkds
-.
-.
-.
-.
-int a = 4;
-.
-.
-if (a == 4) {
-	a = 4;
-}
+(no error)
+]
 
+
+testPreprocessor[LINE_MARKERS_2jmj7l5rSw0yVb/vlWAYkK/YBwk]=[
+
+<><><><><><><><><><><><><><><><><><><><><><><><><>
+(no error)
 ]
 
 

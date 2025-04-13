@@ -1,11 +1,14 @@
 package io.github.douira.glsl_preprocessor.fs;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import io.github.douira.glsl_preprocessor.*;
 
-class StringFile implements VirtualFile {
+public class StringFile implements VirtualFile {
+	private final String name;
 	private final String content;
 
-	public StringFile(String content) {
+	public StringFile(String name, String content) {
+		this.name = name;
 		this.content = content;
 	}
 
@@ -14,8 +17,14 @@ class StringFile implements VirtualFile {
 		return true;
 	}
 
+	@NonNull
 	@Override
 	public Source getSource() {
-		return new StringLexerSource(content);
+		return new StringLexerSource(content, name, true);
+	}
+
+	@Override
+	public String toString() {
+		return name;
 	}
 }

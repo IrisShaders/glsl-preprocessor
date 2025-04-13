@@ -39,7 +39,7 @@ public class VaArgsPastingTest {
 				""";
 		LOG.info("Input is:\n{}", input);
 		Preprocessor pp = new Preprocessor();
-		pp.addFeature(Feature.KEEPCOMMENTS);
+		pp.addFeature(Feature.KEEP_COMMENTS);
 		pp.addInput(new StringLexerSource(input, true));
 		String output;
 		try {

@@ -24,7 +24,7 @@ public class ErrorTest {
 		/* Without a PreprocessorListener, throws an exception. */
 		sl = new StringLexerSource(input, true);
 		p = new Preprocessor();
-		p.addFeature(Feature.CSYNTAX);
+		p.addFeature(Feature.C_SYNTAX);
 		p.addInput(sl);
 		try {
 			assertTrue(testError(p));
@@ -36,7 +36,7 @@ public class ErrorTest {
 		/* With a PreprocessorListener, records the error. */
 		sl = new StringLexerSource(input, true);
 		p = new Preprocessor();
-		p.addFeature(Feature.CSYNTAX);
+		p.addFeature(Feature.C_SYNTAX);
 		p.addInput(sl);
 		pl = new DefaultPreprocessorListener();
 		p.setListener(pl);
@@ -44,7 +44,7 @@ public class ErrorTest {
 		assertTrue(testError(p));
 		assertTrue(pl.getErrors() > 0, "Listener has errors");
 
-		/* Without CSYNTAX, works happily. */
+		/* Without C_SYNTAX, works happily. */
 		sl = new StringLexerSource(input, true);
 		p = new Preprocessor();
 		p.addInput(sl);
