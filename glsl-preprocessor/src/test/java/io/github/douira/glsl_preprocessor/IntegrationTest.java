@@ -41,20 +41,33 @@ public class IntegrationTest {
 			prepare.accept(pp);
 		}
 
-		var snapshotOutput = "(no error)";
+		var snapshotOutput = new StringBuilder();
 		if (errors) {
 			var e = assertThrows(Exception.class, pp::printToString);
 			pp.close();
-			snapshotOutput = e.toString();
+			snapshotOutput.append(e.toString());
 		} else {
 			var output = pp.printToString();
 			assertEquals(expectedOutput, output);
+			snapshotOutput.append("(no error)");
+		}
+		
+		for (var entry : pp.getSourceNumbers().entrySet()) {
+			var source = entry.getKey();
+			if (source == null) {
+				continue;
+			}
+			var sourceNumber = entry.getValue();
+			snapshotOutput.append("\n");
+			snapshotOutput.append(sourceNumber);
+			snapshotOutput.append("->");
+			snapshotOutput.append(source);
 		}
 
 		expect
 				.scenario(type + "_" + getBase64Hash(input))
 				.toMatchSnapshot(SnapshotUtil.inputOutputSnapshot(
-						input, snapshotOutput));
+						input, snapshotOutput.toString()));
 	}
 
 	@SnapshotName("testPreprocessor")

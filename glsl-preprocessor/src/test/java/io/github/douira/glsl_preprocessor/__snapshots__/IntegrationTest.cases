@@ -123,6 +123,48 @@ content 1
 #line 3 0
 foo
 
+§testIncludeLineMapping LINE_MARKERS:
+bar
+#include "length!2:a"
+baz
+#include "length!2:a"
+foo
+
+===
+#line 1 0
+bar
+#line 1 1
+content 0
+content 1
+#line 3 0
+baz
+#line 1 1
+content 0
+content 1
+#line 5 0
+foo
+
+§testIncludeLineMapping LINE_MARKERS:
+bar
+#include "length!2:a"
+baz
+#include "length!2:b"
+foo
+
+===
+#line 1 0
+bar
+#line 1 1
+content 0
+content 1
+#line 3 0
+baz
+#line 1 2
+content 0
+content 1
+#line 5 0
+foo
+
 §testIncludeLineMapping LINE_MARKERS,NAMED_LINE_MARKERS:
 bar
 #include "length!2:a"

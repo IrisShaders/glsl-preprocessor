@@ -63,6 +63,20 @@ foo
 ]
 
 
+testIncludeLineMapping[LINE_MARKERS_KMXHA9leEtjEQjB1tipNUWRHgsw]=[
+bar
+#include "length!2:a"
+baz
+#include "length!2:b"
+foo
+
+<><><><><><><><><><><><><><><><><><><><><><><><><>
+(no error)
+1->length!2:a
+2->length!2:b
+]
+
+
 testIncludeLineMapping[LINE_MARKERS_dSPMsT7XryDyTsdqDoJrH6BH3Zo]=[
 bar
 #include "length!2:a"
@@ -70,6 +84,20 @@ foo
 
 <><><><><><><><><><><><><><><><><><><><><><><><><>
 (no error)
+1->length!2:a
+]
+
+
+testIncludeLineMapping[LINE_MARKERS_x+AzR2u8DVoryMYAQ2zIR24fhCk]=[
+bar
+#include "length!2:a"
+baz
+#include "length!2:a"
+foo
+
+<><><><><><><><><><><><><><><><><><><><><><><><><>
+(no error)
+1->length!2:a
 ]
 
 
